@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="#000000">
+
+<LinearLayout  
+   android:orientation="vertical"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent" android:gravity="top" android:id="@+id/twill"
+    android:background="@android:color/transparent">
+
+
+</LinearLayout>
+
+<RelativeLayout 
+	android:id="@+id/titler"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="44dip">
+    
+     <Button
+         android:id="@+id/back"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_centerVertical="true"
+         android:layout_marginLeft="5dip"
+         android:padding="3dip"
+         android:text="back"
+         android:textColor="#FFFFFF" />
+   
+    <TextView android:id="@+id/netgeartitle"   
+	   		android:layout_width="wrap_content" 
+       		android:layout_centerInParent="true" 
+       		android:layout_height="wrap_content" 
+       		android:layout_centerVertical="false" 
+       		android:textStyle="bold" 
+       		android:typeface="normal"
+       		 android:textSize="19sp"/>   
+	
+    <Button android:id="@+id/about"   
+	   		android:layout_height="wrap_content"
+	   		 android:layout_width="wrap_content" 
+	   		android:layout_marginRight="5dip" 
+	   		android:layout_alignParentRight="true" 
+	   		android:text="about"
+	   		android:textColor="#FFFFFF" 
+	   		android:padding="3dip" 
+	   		android:layout_centerVertical="true"/> 
+</RelativeLayout>	
+
+<ProgressBar
+	android:id="@+id/imageloading"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content" android:layout_gravity="center"></ProgressBar>
+<ZoomControls android:id="@+id/zoomcontrols"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content" android:layout_gravity="bottom|center_horizontal"/>
+
+</FrameLayout>
