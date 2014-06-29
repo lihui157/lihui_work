@@ -23,9 +23,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-public class ImgListFragment extends Fragment {
+public class VideoListFragment extends Fragment {
 	
-	private static final String TAG = "ImgListFragment";
+	private static final String TAG = "VideoListFragment";
 	
 	private ListView listView;
 	private FileAdapter imgAdapter;
@@ -74,7 +74,7 @@ public class ImgListFragment extends Fragment {
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 //		return super.onCreateView(inflater, container, savedInstanceState);
-		return inflater.inflate(R.layout.img_list_fragment, container, false);
+		return inflater.inflate(R.layout.video_list_fragment, container, false);
 	}
 	
 	
@@ -92,7 +92,7 @@ public class ImgListFragment extends Fragment {
 	}
 	
 	private void initUI(){
-		listView = (ListView) getActivity().findViewById(R.id.lv_img_list);
+		listView = (ListView) getActivity().findViewById(R.id.lv_video_list);
 		if(dataList==null){
 			dataList = new ArrayList<File>();
 		}

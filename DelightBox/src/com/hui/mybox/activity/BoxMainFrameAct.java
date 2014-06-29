@@ -20,6 +20,10 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener  {
 	
 	private static final String TAG = "BoxMainFrameAct";
 	private ActionBar actionBar;
+	
+	private ImgListFragment imgListFragment;
+	private MusicListFragment musicListFragment;
+	private VideoListFragment videoListFragment;
 
 
 	@Override
@@ -65,10 +69,49 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener  {
 		Log.i(TAG, arg0.getText().toString());
 		switch (arg0.getPosition()) {
 		case 0:
-			ImgListFragment imgListFragment = new ImgListFragment();
-			arg1 = getSupportFragmentManager().beginTransaction();
-			arg1.add(R.id.fl_fragment_container, imgListFragment, imgListFragment.getClass().getCanonicalName());
-			arg1.commit();
+			imgListFragment = (ImgListFragment) getSupportFragmentManager().findFragmentByTag(ImgListFragment.class.getCanonicalName());
+			if(imgListFragment!=null){
+				if(imgListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.replace(R.id.fl_fragment_container, imgListFragment, ImgListFragment.class.getCanonicalName());
+				arg1.commit();
+			}else{
+				imgListFragment = new ImgListFragment();
+				if(imgListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.add(R.id.fl_fragment_container, imgListFragment, ImgListFragment.class.getCanonicalName());
+				arg1.commit();
+			}
+			break;
+		case 1:
+			videoListFragment = (VideoListFragment) getSupportFragmentManager().findFragmentByTag(VideoListFragment.class.getCanonicalName());
+			if(videoListFragment!=null){
+				if(videoListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.replace(R.id.fl_fragment_container, videoListFragment, VideoListFragment.class.getCanonicalName());
+				arg1.commit();
+			}else{
+				videoListFragment = new VideoListFragment();
+				if(imgListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.add(R.id.fl_fragment_container, videoListFragment, VideoListFragment.class.getCanonicalName());
+				arg1.commit();
+			}
+			break;
+		case 2:
+			musicListFragment = (MusicListFragment) getSupportFragmentManager().findFragmentByTag(MusicListFragment.class.getCanonicalName());
+			if(musicListFragment!=null){
+				if(musicListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.replace(R.id.fl_fragment_container, musicListFragment, MusicListFragment.class.getCanonicalName());
+				arg1.commit();
+			}else{
+				musicListFragment = new MusicListFragment();
+				if(musicListFragment.isAdded()) break;
+				arg1 = getSupportFragmentManager().beginTransaction();
+				arg1.add(R.id.fl_fragment_container, musicListFragment, MusicListFragment.class.getCanonicalName());
+				arg1.commit();
+			}
 			break;
 
 		default:
