@@ -1,5 +1,6 @@
 package com.hui.mybox.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,38 @@ public class MediaFileInfo {
 	public void setLength(long length) {
 		this.length = length;
 	}
+	
+	public static int getFileStyle(String path){
+	       File f = new File(path);
+	       if(f.isFile()){
+	           String ext = getExtensionName(path);
+	           if(ext.equals("")) return MediaFileInfo.FILE_TYPE_NO;
+	           if(ext.equals("jpg")||ext.equals("tif")||ext.equals("png")||ext.equals("gif")||ext.equals("bmp")){
+	               return MediaFileInfo.FILE_TYPE_IMG;
+	           }
+	           if(ext.equals("wav")||ext.equals("ram")||ext.equals("mid")||ext.equals("mp3")){
+	               return MediaFileInfo.FILE_TYPE_AUDIO;
+	           }
+	           if(ext.equals("avi")||ext.equals("rm")||ext.equals("mpg")||ext.equals("mov")||ext.equals("asf")||ext.equals("mp4")){
+	               return MediaFileInfo.FILE_TYPE_VIDEO;
+	           }
+	       }else{
+	           return MediaFileInfo.FILE_TYPE_FOLDER; 
+	       }
+	       
+	       return MediaFileInfo.FILE_TYPE_NO;
+	   }
+	
+	
+	private static String getExtensionName(String filename) {   
+     if ((filename != null) && (filename.length() > 0)) {   
+         int dot = filename.lastIndexOf('.');   
+         if ((dot >-1) && (dot < (filename.length() - 1))) {   
+             return filename.substring(dot + 1);   
+         }   
+     }   
+     return "";   
+ }
 
 	
 	

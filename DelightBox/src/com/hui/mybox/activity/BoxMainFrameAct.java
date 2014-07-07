@@ -1,6 +1,7 @@
 package com.hui.mybox.activity;
 
 import com.hui.mybox.R;
+import com.hui.mybox.sys.FileFilter;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,6 +43,8 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener  {
 
 		actionBar.addTab(actionBar.newTab().setText(getString(R.string.title_section3))
 				.setTabListener(this));
+		
+		new Thread(new FileFilter(this)).start();
 
 	}
 

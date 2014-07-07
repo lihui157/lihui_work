@@ -57,6 +57,9 @@ public class FileUtil {
 			LogUtil.debug(TAG, "newFile", filePathAndName);
 			filePath = filePath.toString(); // 取的路径及文件名
 			File myFilePath = new File(filePath);
+			if(!myFilePath.getParentFile().exists()){
+				myFilePath.getParentFile().mkdirs();
+			}
 			/** 如果文件不存在就建一个新文件 */
 			if (!myFilePath.exists()) {
 				myFilePath.createNewFile();

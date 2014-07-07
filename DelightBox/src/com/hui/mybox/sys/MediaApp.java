@@ -2,6 +2,7 @@ package com.hui.mybox.sys;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,19 +36,19 @@ public class MediaApp extends Application {
 	private static final String TAG = "MediaApp";
 	
 	//本地图片类型文件索引列表
-	public static ArrayList<MediaFileInfo> imgList;
+	public static LinkedList<MediaFileInfo> imgList;
 	//本地视频类型文件索引列表
-	public static ArrayList<MediaFileInfo> videoList;
+	public static LinkedList<MediaFileInfo> videoList;
 	//本地音频类型文件索引列表
-	public static ArrayList<MediaFileInfo> audioList;
+	public static LinkedList<MediaFileInfo> audioList;
 	//本地文件目录索引列表
 //	public static HashMap<String,LocalBrowseList> folderMap;
 	// 本地图片类型文件索引列表
-	public static ArrayList<MediaFileInfo> imgListTemp;
+	public static LinkedList<MediaFileInfo> imgListTemp;
 	// 本地视频类型文件索引列表
-	public static ArrayList<MediaFileInfo> videoListTemp;
+	public static LinkedList<MediaFileInfo> videoListTemp;
 	// 本地音频类型文件索引列表
-	public static ArrayList<MediaFileInfo> audioListTemp;
+	public static LinkedList<MediaFileInfo> audioListTemp;
 	// 本地文件目录索引列表
 //	public static HashMap<String, LocalBrowseList> folderMapTemp;
 	//系统共享目录

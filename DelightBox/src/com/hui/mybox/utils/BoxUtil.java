@@ -1,6 +1,7 @@
 package com.hui.mybox.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import com.hui.mybox.model.MediaFileInfo;
 
 import android.app.Activity;
 import android.content.Context;
@@ -114,4 +117,7 @@ public class BoxUtil {
 
 		return mBitmap;
 	}
+	
+	
+	
 }

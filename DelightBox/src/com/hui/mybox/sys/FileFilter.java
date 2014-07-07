@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 
 
 
 
+import com.google.gson.Gson;
 import com.hui.mybox.model.MediaFileInfo;
+import com.hui.mybox.utils.FileUtil;
+import com.hui.mybox.utils.LogUtil;
 
 import android.content.Context;
 import android.os.Environment;
@@ -28,6 +32,10 @@ public class FileFilter implements Runnable {
 	private static final String TAG = "FileFilter";
 	
 	private Context c;
+	
+	private long size = 1024*50;
+	
+	private MediaFileInfo mfi;
 
 	public FileFilter(Context c){
 		this.c = c;
@@ -35,24 +43,26 @@ public class FileFilter implements Runnable {
 	
 	@Override
 	public void run() {
+		LogUtil.debug(TAG, "FileFilter is run...");
 		// 获取根目录路径
 		try {
 			String rootPath = Environment.getExternalStorageDirectory()
 					.getCanonicalPath();
+			String fileRoot = rootPath+Config.Sys.APP_ROOT;
 			
 			//临时缓存
 //			MediaApp.folderMapTemp = new HashMap<String, LocalBrowseList>();
-			MediaApp.imgListTemp = new ArrayList<MediaFileInfo>();
-			MediaApp.videoListTemp = new ArrayList<MediaFileInfo>();
-			MediaApp.audioListTemp = new ArrayList<MediaFileInfo>();
+			MediaApp.imgListTemp = new LinkedList<MediaFileInfo>();
+			MediaApp.videoListTemp = new LinkedList<MediaFileInfo>();
+			MediaApp.audioListTemp = new LinkedList<MediaFileInfo>();
 			
 			//开始遍历
 			parseDirectory(rootPath);
 			
 			//写入文件缓存
-//			FileUtil.writeText(rootPath+Config.System.LOCAL_IMAGE_LIST_PATH, new Gson().toJson(MediaApp.imgListTemp));
-//			FileUtil.writeText(rootPath+Config.System.LOCAL_AUDIO_LIST_PATH, new Gson().toJson(MediaApp.audioListTemp));
-//			FileUtil.writeText(rootPath+Config.System.LOCAL_VIDEO_LIST_PATH, new Gson().toJson(MediaApp.videoListTemp));
+			FileUtil.newFile(fileRoot+Config.Sys.IMG_INDEX_FILE, new Gson().toJson(MediaApp.imgListTemp));
+			FileUtil.newFile(fileRoot+Config.Sys.MUSIC_INDEX_FILE, new Gson().toJson(MediaApp.audioListTemp));
+			FileUtil.newFile(fileRoot+Config.Sys.VIDEO_INDEX_FILE, new Gson().toJson(MediaApp.videoListTemp));
 //			FileUtil.writeText(rootPath+Config.System.LOCAL_FOLDER_LIST_PATH, new Gson().toJson(MediaApp.folderMapTemp));
 //			
 			//替换成正式缓存
@@ -102,31 +112,33 @@ public class FileFilter implements Runnable {
 				ArrayList<MediaFileInfo> list = new ArrayList<MediaFileInfo>();
 				File[] fs = f.listFiles();
 				if (fs != null) {
-					for (int i = 0; i < fs.length; i++) {
+//					for (int i = 0; i < fs.length; i++) {
+					for(File f_temp:fs){
 						boolean bTemp = false;
 						// 判断文件性质
-						if (fs[i].isDirectory()) {
+						if (f_temp.isDirectory()) {
 							// 递归调用
-							bTemp = parseDirectory(fs[i].getCanonicalPath());
+							bTemp = parseDirectory(f_temp.getCanonicalPath());
 						}
-						MediaFileInfo mfi = new MediaFileInfo();
-						mfi.setFileName(fs[i].getName());
-						mfi.setPath(fs[i].getCanonicalPath());
-						mfi.setLength(fs[i].length());
-//						mfi.setFileType(DlnaUtil.getFileStyle(fs[i]
-//								.getCanonicalPath()));
+						
+						mfi = new MediaFileInfo();
+						mfi.setFileName(f_temp.getName());
+						mfi.setPath(f_temp.getCanonicalPath());
+						mfi.setLength(f_temp.length());
+						mfi.setFileType(MediaFileInfo.getFileStyle(f_temp
+								.getCanonicalPath()));
 						// 如果文件类型是图片，加载该信息到图片索引
-						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_IMG) {
+						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_IMG&&mfi.getLength()>size) {
 							MediaApp.imgListTemp.add(mfi); 
 							b = true;
 						}
 						// 如果文件类型是视频，加载该信息到视频索引
-						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_VIDEO) {
+						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_VIDEO&&mfi.getLength()>size) {
 							MediaApp.videoListTemp.add(mfi);
 							b = true;
 						}
 						// 如果文件类型是音频，加载该信息到音频索引
-						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_AUDIO) {
+						if (mfi.getFileType() == MediaFileInfo.FILE_TYPE_AUDIO&&mfi.getLength()>size) {
 							MediaApp.audioListTemp.add(mfi);
 							b = true;
 						}
@@ -165,7 +177,7 @@ public class FileFilter implements Runnable {
 				}
 
 			} else {
-//				LogUtil.error(TAG, "parseDirectory", "解析出错，File可能不存在");
+				LogUtil.error(TAG, "parseDirectory", "解析出错，File可能不存在");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
