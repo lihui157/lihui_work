@@ -1,12 +1,18 @@
 package com.hui.mybox.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hui.mybox.R;
+import com.hui.mybox.model.MediaFileInfo;
+import com.hui.mybox.sys.Config;
+import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
-import com.hui.mybox.view.FileAdapter;
+import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -15,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +35,8 @@ public class ImgListFragment extends Fragment {
 	private static final String TAG = "ImgListFragment";
 	
 	private ListView listView;
-	private FileAdapter imgAdapter;
-	private List<File> dataList;
+	private MediaFileAdapter imgAdapter;
+	private List<MediaFileInfo> dataList;
 	
 	public static final int VAL_GET_FILE = 1001;
 	public static final int VAL_REFRESH_ADAPTER = 1002;
@@ -79,11 +86,28 @@ public class ImgListFragment extends Fragment {
 	
 	
 	private void initData(){
-		File file = Environment.getExternalStorageDirectory();
-		if(dataList==null){
-			dataList = new ArrayList<File>();
+		String imgIndexPath;
+		try {
+			imgIndexPath = Environment.getExternalStorageDirectory().getCanonicalPath()
+					+Config.Sys.APP_ROOT
+					+Config.Sys.IMG_INDEX_FILE;
+			if(dataList==null){
+				dataList = new ArrayList<MediaFileInfo>();
+			}
+			dataList.clear();
+			Log.i(TAG, "-----");
+			Log.i(TAG, FileUtil.readTextFile(imgIndexPath));
+			ArrayList<MediaFileInfo> tempList = new Gson().fromJson(
+					FileUtil.readTextFile(imgIndexPath), 
+					new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
+					);
+			for(MediaFileInfo info:tempList){
+				dataList.add(info);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		dataList.add(file);
+		
 	}
 	
 	private void refreshData(){
@@ -94,10 +118,10 @@ public class ImgListFragment extends Fragment {
 	private void initUI(){
 		listView = (ListView) getActivity().findViewById(R.id.lv_img_list);
 		if(dataList==null){
-			dataList = new ArrayList<File>();
+			dataList = new ArrayList<MediaFileInfo>();
 		}
 		if(imgAdapter==null){
-			imgAdapter = new FileAdapter(getActivity(), dataList);
+			imgAdapter = new MediaFileAdapter(getActivity(), dataList);
 		}
 		listView.setAdapter(imgAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -105,7 +129,7 @@ public class ImgListFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				LogUtil.info(TAG, "listView.setOnItemClickListener", dataList.get(arg2).getName());
+				LogUtil.info(TAG, "listView.setOnItemClickListener", dataList.get(arg2).getFileName());
 				
 			}
 		});

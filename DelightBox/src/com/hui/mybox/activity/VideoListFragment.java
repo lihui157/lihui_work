@@ -1,12 +1,18 @@
 package com.hui.mybox.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hui.mybox.R;
+import com.hui.mybox.model.MediaFileInfo;
+import com.hui.mybox.sys.Config;
+import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
-import com.hui.mybox.view.FileAdapter;
+import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -28,8 +34,8 @@ public class VideoListFragment extends Fragment {
 	private static final String TAG = "VideoListFragment";
 	
 	private ListView listView;
-	private FileAdapter imgAdapter;
-	private List<File> dataList;
+	private MediaFileAdapter imgAdapter;
+	private List<MediaFileInfo> dataList;
 	
 	public static final int VAL_GET_FILE = 1001;
 	public static final int VAL_REFRESH_ADAPTER = 1002;
@@ -79,11 +85,21 @@ public class VideoListFragment extends Fragment {
 	
 	
 	private void initData(){
-		File file = Environment.getExternalStorageDirectory();
-		if(dataList==null){
-			dataList = new ArrayList<File>();
+		String videoIndexPath;
+		try {
+			videoIndexPath = Environment.getExternalStorageDirectory().getCanonicalPath()
+					+Config.Sys.APP_ROOT
+					+Config.Sys.VIDEO_INDEX_FILE;
+			if(dataList==null){
+				dataList = new Gson().fromJson(
+						FileUtil.readTextFile(videoIndexPath), 
+						new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
+						);
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		dataList.add(file);
 	}
 	
 	private void refreshData(){
@@ -94,10 +110,10 @@ public class VideoListFragment extends Fragment {
 	private void initUI(){
 		listView = (ListView) getActivity().findViewById(R.id.lv_video_list);
 		if(dataList==null){
-			dataList = new ArrayList<File>();
+			dataList = new ArrayList<MediaFileInfo>();
 		}
 		if(imgAdapter==null){
-			imgAdapter = new FileAdapter(getActivity(), dataList);
+			imgAdapter = new MediaFileAdapter(getActivity(), dataList);
 		}
 		listView.setAdapter(imgAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -105,7 +121,7 @@ public class VideoListFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				LogUtil.info(TAG, "listView.setOnItemClickListener", dataList.get(arg2).getName());
+				LogUtil.info(TAG, "listView.setOnItemClickListener", dataList.get(arg2).getFileName());
 				
 			}
 		});

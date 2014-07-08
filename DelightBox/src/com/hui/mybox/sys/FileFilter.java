@@ -182,6 +182,7 @@ public class FileFilter implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		return b;
 	}
 

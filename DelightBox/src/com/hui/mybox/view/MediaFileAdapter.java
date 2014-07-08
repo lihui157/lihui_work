@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import com.hui.mybox.R;
+import com.hui.mybox.model.MediaFileInfo;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,13 +15,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class FileAdapter extends BaseAdapter {
+public class MediaFileAdapter extends BaseAdapter {
 	
-	private List<File> data;
+	private List<MediaFileInfo> data;
 	
 	private LayoutInflater listContainer;
 	
-	public FileAdapter(Context context,List<File> dataList){
+	public MediaFileAdapter(Context context,List<MediaFileInfo> dataList){
 		this.data = dataList;
 		listContainer = LayoutInflater.from(context);
 	}
@@ -64,10 +65,10 @@ public class FileAdapter extends BaseAdapter {
 	            listItemView = (ListItemView)convertView.getTag();   
 	        } 
 	        
-	        listItemView.name.setText(data.get(arg0).getName());
-	        listItemView.path.setText(data.get(arg0).getCanonicalPath());
-	        listItemView.size.setText((data.get(arg0).isFile())? String.valueOf(data.get(arg0).length()):"");
-	        listItemView.time.setText(data.get(arg0).getName());
+	        listItemView.name.setText(data.get(arg0).getFileName());
+	        listItemView.path.setText(data.get(arg0).getPath());
+	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? String.valueOf(data.get(arg0).getLength()):"");
+	        listItemView.time.setText(data.get(arg0).getFileName());
 	        
 		} catch (Exception e) {
 			e.printStackTrace();
