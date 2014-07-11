@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">娱乐盒</string>
+    <string name="title_section1">图片</string>
+    <string name="title_section2">视频</string>
+    <string name="title_section3">音乐</string>
+    <string name="action_settings">设置</string>
+
+</resources>
