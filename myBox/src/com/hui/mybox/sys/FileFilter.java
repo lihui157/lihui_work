@@ -125,6 +125,7 @@ public class FileFilter implements Runnable {
 						mfi.setFileName(f_temp.getName());
 						mfi.setPath(f_temp.getCanonicalPath());
 						mfi.setLength(f_temp.length());
+						mfi.setLastModifTime(f_temp.lastModified());
 						mfi.setFileType(MediaFileInfo.getFileStyle(f_temp
 								.getCanonicalPath()));
 						// 如果文件类型是图片，加载该信息到图片索引

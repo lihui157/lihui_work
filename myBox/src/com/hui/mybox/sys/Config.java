@@ -13,6 +13,8 @@ public class Config {
 		
 		public static final String MUSIC_INDEX_FILE = "music_index.json";
 		
+		public static final String IMG_CACHE_PATH = "/mybox/img_cache/";
+		
 	}
 	
 }

@@ -42,6 +42,16 @@ public class MediaFileInfo {
 	
 	private long length;
 	
+	private long lastModifTime;
+	
+
+	public long getLastModifTime() {
+		return lastModifTime;
+	}
+
+	public void setLastModifTime(long lastModifTime) {
+		this.lastModifTime = lastModifTime;
+	}
 
 	public String getPath() {
 		return path;

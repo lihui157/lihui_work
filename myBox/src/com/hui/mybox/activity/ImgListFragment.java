@@ -12,6 +12,7 @@ import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.sys.Config;
 import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
+import com.hui.mybox.view.ImageAdapter;
 import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
@@ -35,7 +36,7 @@ public class ImgListFragment extends Fragment {
 	private static final String TAG = "ImgListFragment";
 	
 	private ListView listView;
-	private MediaFileAdapter imgAdapter;
+	private ImageAdapter imgAdapter;
 	private List<MediaFileInfo> dataList;
 	
 	public static final int VAL_GET_FILE = 1001;
@@ -121,7 +122,7 @@ public class ImgListFragment extends Fragment {
 			dataList = new ArrayList<MediaFileInfo>();
 		}
 		if(imgAdapter==null){
-			imgAdapter = new MediaFileAdapter(getActivity(), dataList);
+			imgAdapter = new ImageAdapter(getActivity(), dataList);
 		}
 		listView.setAdapter(imgAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {

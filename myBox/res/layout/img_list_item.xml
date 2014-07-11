@@ -4,38 +4,39 @@
     android:layout_height="match_parent"
     tools:context="com.hui.delightbox.MainActivity$PlaceholderFragment" >
 
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="3dp"
+        android:src="@drawable/ic_launcher" />
+
     <TextView
         android:id="@+id/tv_img_item_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/tv_img_item_size"
-        android:layout_marginRight="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/iv_icon"
+        android:ellipsize="middle"
+        android:singleLine="true"
         android:text="name" />
 
     <TextView
         android:id="@+id/tv_img_item_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="size" />
-
-    <TextView
-        android:id="@+id/tv_img_item_path"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/tv_img_item_name"
         android:layout_below="@+id/tv_img_item_name"
-        android:layout_toLeftOf="@+id/tv_img_item_time"
-        android:layout_marginRight="10dp"
-        android:text="path" />
+        android:text="size" />
 
     <TextView
         android:id="@+id/tv_img_item_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/tv_img_item_size"
+        android:layout_toRightOf="@+id/iv_icon"
         android:text="time" />
 
 </RelativeLayout>

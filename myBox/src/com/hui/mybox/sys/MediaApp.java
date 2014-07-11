@@ -175,7 +175,7 @@ public class MediaApp extends Application {
 	
 	//-------------------------------------------------------------------
 	
-	private static MediaApp instance;
+	public static MediaApp instance;
 
     public final static String SLEEP_INTENT = "org.videolan.vlc.SleepIntent";
 
@@ -226,6 +226,7 @@ public class MediaApp extends Application {
         super.onLowMemory();
         Log.w(TAG, "System is running low on memory");
 
+        System.gc();
 //        BitmapCache.getInstance().clear();
     }
 

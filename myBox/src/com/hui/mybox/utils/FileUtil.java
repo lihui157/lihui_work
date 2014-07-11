@@ -11,6 +11,11 @@ import java.io.PrintWriter;
 
 import org.apache.http.util.EncodingUtils;
 
+import com.hui.mybox.view.AsynImageLoader;
+
+import android.os.Environment;
+
+
 /**
  * 文件操作类
  * @author lihui
@@ -19,6 +24,55 @@ import org.apache.http.util.EncodingUtils;
 public class FileUtil {
 
 	private static final String TAG = "FileUtil";
+	
+	/**
+	  * 获取图片缓存
+	  * @param imageUri
+	  * @return
+	  */
+   public static File getCacheFile(String imageUri){  
+       File cacheFile = null;  
+       try {  
+           if (Environment.getExternalStorageState().equals(  
+                   Environment.MEDIA_MOUNTED)) {  
+               File sdCardDir = Environment.getExternalStorageDirectory();  
+               String fileName = getFileName(imageUri);  
+               File dir = new File(sdCardDir.getCanonicalPath()  
+                       + AsynImageLoader.CACHE_DIR);  
+               if (!dir.exists()) {  
+                   dir.mkdirs();  
+               }  
+               cacheFile = new File(dir, fileName);  
+//               LogUtil.info(TAG, "exists:" + cacheFile.exists() + ",dir:" + dir + ",file:" + fileName);  
+           }    
+       } catch (IOException e) {  
+           e.printStackTrace();  
+           LogUtil.error(TAG, "getCacheFileError:" + e.getMessage());  
+       }  
+         
+       return cacheFile;  
+   }  
+   
+   public static String getFileName(String path) {  
+       int index = path.lastIndexOf("/");  
+       return path.substring(index + 1);  
+   }  
+   
+   /** 
+    * 删除单个文件 
+    * @param   sPath    被删除文件的文件名 
+    * @return 单个文件删除成功返回true，否则返回false 
+    */  
+   public static boolean deleteFile(String sPath) {  
+   	boolean flag = false;  
+       File file = new File(sPath);  
+       // 路径为文件且不为空则进行删除  
+       if (file.isFile() && file.exists()) {  
+           file.delete();  
+           flag = true;  
+       }  
+       return flag;  
+   } 
 	
 	/**
 	 * 新建目录

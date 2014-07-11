@@ -4,26 +4,36 @@ import java.io.File;
 import java.util.List;
 
 
-
 import com.hui.mybox.R;
 import com.hui.mybox.model.MediaFileInfo;
-
+import com.hui.mybox.sys.MediaApp;
+import com.hui.mybox.utils.BoxUtil;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MediaFileAdapter extends BaseAdapter {
+	
+	private static final String TAG = "MediaFileAdapter";
 	
 	private List<MediaFileInfo> data;
 	
 	private LayoutInflater listContainer;
 	
+	private Context context;
+	
 	public MediaFileAdapter(Context context,List<MediaFileInfo> dataList){
 		this.data = dataList;
 		listContainer = LayoutInflater.from(context);
+		this.context = context;
 	}
 
 	@Override
@@ -55,7 +65,7 @@ public class MediaFileAdapter extends BaseAdapter {
 	            convertView = listContainer.inflate(R.layout.img_list_item, null);   
 	            //获取控件对象   
 	            listItemView.name = (TextView)convertView.findViewById(R.id.tv_img_item_name);   
-	            listItemView.path = (TextView)convertView.findViewById(R.id.tv_img_item_path);   
+	            listItemView.icon = (ImageView)convertView.findViewById(R.id.iv_icon);   
 	            listItemView.size = (TextView)convertView.findViewById(R.id.tv_img_item_size);   
 	            listItemView.time = (TextView)convertView.findViewById(R.id.tv_img_item_time);   
 	            
@@ -66,9 +76,13 @@ public class MediaFileAdapter extends BaseAdapter {
 	        } 
 	        
 	        listItemView.name.setText(data.get(arg0).getFileName());
-	        listItemView.path.setText(data.get(arg0).getPath());
+	        Log.e(TAG, "name = "+data.get(arg0).getFileName());
+	        listItemView.icon.setImageBitmap(BoxUtil.getBitmap(context, data.get(arg0).getPath()));
+	        Log.e(TAG, "path = "+data.get(arg0).getPath());
 	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? String.valueOf(data.get(arg0).getLength()):"");
-	        listItemView.time.setText(data.get(arg0).getFileName());
+	        Log.e(TAG, "size = "+listItemView.size.getText().toString());
+	        listItemView.time.setText(Long.toString(data.get(arg0).getLastModifTime()));
+	        Log.e(TAG, "time = "+listItemView.time.getText().toString());
 	        
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,10 +91,12 @@ public class MediaFileAdapter extends BaseAdapter {
     
 	}
 	
+	
+	
 	class ListItemView{
 		TextView time;
 		TextView size;
-		TextView path;
+		ImageView icon;
 		TextView name;
 	}
 
