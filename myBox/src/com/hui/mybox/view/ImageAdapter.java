@@ -257,9 +257,11 @@ public class ImageAdapter extends BaseAdapter {
 	private ImageView getLocalPic2ImageView_(String path,View view,int num){
 		Bitmap bitmap = caches.get(path);
 		if(bitmap==null){
-			caches.remove(path);final Task task = new Task();
+			caches.remove(path);
+			final Task task = new Task();
 			task.path = path;
 			task.num = num;
+			view.setTag(path);
 			task.callback = getImageCallback((ImageView) view,
 					R.drawable.image_type);
 			if(isLoading){
@@ -845,7 +847,7 @@ public class ImageAdapter extends BaseAdapter {
 			@Override
 			public void loadImage(String path, Bitmap bitmap) {
 				Log.e(TAG, "path:"+path);
-				Log.e(TAG, "imageView:"+imageView);
+				Log.e(TAG, "imageView:"+imageView.getTag());
 				if (path.equals(imageView.getTag().toString())
 						&& bitmap != null) {
 					imageView.setImageBitmap(bitmap);
