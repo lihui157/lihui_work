@@ -43,7 +43,7 @@ public class FileFilter implements Runnable {
 	
 	@Override
 	public void run() {
-		LogUtil.debug(TAG, "FileFilter is run... ");
+		LogUtil.debug(TAG, "FileFilter is run...");
 		// 获取根目录路径
 		try {
 			String rootPath = Environment.getExternalStorageDirectory()
