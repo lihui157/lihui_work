@@ -56,7 +56,7 @@ public class ImageAdapter extends BaseAdapter {
 	private int end;// 可启动线程索引结束值
 	private static final long fileLength = 1024*1024*2;//5M
 	
-	private LinkedList<GetLocalBitMapThread> localThreadList;//本地图片加载线程
+	private List<GetLocalBitMapThread> localThreadList;//本地图片加载线程
 	private final int localMax = 10;// 大图片加载线程最大数
 	private int localCurrentNum = 0;// 当前大图片加载线程数
 	
@@ -98,25 +98,12 @@ public class ImageAdapter extends BaseAdapter {
                 return bitmap.getByteCount();  
             }  
         };  
-		bigThreadList = new ArrayList<GetBigBitMapThread>();
-		smallThreadList = new ArrayList<GetSmallBitMapThread>();
-		localThreadList = new LinkedList<GetLocalBitMapThread>();
-	}
-
-//	public ImageAdapter(Context c, List<? extends Map<String, ?>> data,
-//			String[] from, int[] to) {
-//		this.from = from;
-//		this.to = to;
-//		this.mSelfData = data;
-//		this.mLayoutInflater = (LayoutInflater) c
-//				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//		asynImageLoader = new AsynImageLoader();
-//		// 初始化变量
-//		caches = new HashMap<String, SoftReference<Bitmap>>();
 //		bigThreadList = new ArrayList<GetBigBitMapThread>();
 //		smallThreadList = new ArrayList<GetSmallBitMapThread>();
-//		localThreadList = new ArrayList<GetLocalBitMapThread>();
-//	}
+		localThreadList = new ArrayList<GetLocalBitMapThread>();
+	}
+
+
 
 	@Override
 	public int getCount() {
@@ -137,22 +124,7 @@ public class ImageAdapter extends BaseAdapter {
 		return arg0;
 	}
 
-//	@Override
-//	public View getView(int arg0, View convertView, ViewGroup parent) {
-//		// 获取数据中指定的布局
-//		Map<String, ?> item = mSelfData.get(arg0);
-//		resource = (Integer) item.get(ITEM_LAYOUT);
-//		if (convertView == null) {
-//			convertView = mLayoutInflater.inflate(resource, null);
-//		}
-//		int count = to.length;
-//		for (int i = 0; i < count; i++) {
-//			View v = convertView.findViewById(to[i]);
-//			bindView(v, item, from[i], arg0);
-//		}
-//		convertView.setTag(arg0);
-//		return convertView;
-//	}
+
 	
 	@Override
 	public View getView(int arg0, View convertView, ViewGroup arg2) {
@@ -176,11 +148,11 @@ public class ImageAdapter extends BaseAdapter {
 	        } 
 	        
 	        listItemView.name.setText(data.get(arg0).getFileName());
+//	        data.get(arg0).setPath("http://img0.bdstatic.com/img/image/shouye/dengni46.jpg");
 	        if(data.get(arg0).getPath().startsWith("http")){
-//	        	listItemView.icon = getHttpPic2ImageView(data.get(arg0).getPath(), listItemView.icon, arg0); //加载网络图片
+	        	getHttpPic2ImageView(data.get(arg0).getPath(), listItemView.icon, arg0); //加载网络图片
 			}else{
-//				listItemView.icon = getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //加载本地图片
-				getLocalPic2ImageView_(data.get(arg0).getPath(),listItemView.icon,arg0); //加载本地图片
+				getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //加载本地图片
 			}
 	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? String.valueOf(data.get(arg0).getLength()):"");
 	        listItemView.time.setText(Long.toString(data.get(arg0).getLastModifTime()));
@@ -192,146 +164,38 @@ public class ImageAdapter extends BaseAdapter {
     
 	}
 
-	/**
-	 * 组件与数据绑定
-	 * 
-	 * @param view
-	 *            依附的ui组件
-	 * @param item
-	 *            数据map
-	 * @param from
-	 *            map中的key键名
-	 */
-//	private void bindView(View view, Map<String, ?> item, String from, int num) {
-//		Object data = item.get(from);
-//		if (view instanceof TextView) {
-//
-//			((TextView) view).setText(data == null ? "" : data.toString());
-//		}
-//		if (view instanceof ImageView) {
-//			if (data != null) {
-//				if (data instanceof Integer) {// 处理R.drawable.xx类型的图片
-//					((ImageView) view).setImageResource((Integer) data);
-//				} else if (data instanceof byte[]) {// 处理图片二进制类型
-//					Bitmap bm = BitmapFactory.decodeByteArray((byte[]) data, 0,
-//							((byte[]) data).length);
-//					((ImageView) view).setImageBitmap(bm);
-//
-//				} else if (data instanceof IconDesc) {// 处理自定义IconDesc类型
-//					Bitmap bm = BitmapFactory.decodeByteArray(
-//							((IconDesc) data).getIconData(), 0,
-//							((IconDesc) data).getIconData().length);
-//					((ImageView) view).setImageBitmap(bm);
-//				} else if ((data instanceof String)// 处理字符串，通常为http的图片
-//						&& ((String) data).toLowerCase().startsWith("http")) {
-//					// 判断缓存中是否已经存在该图片
-//					String path = (String) data;
-//					getHttpPic2ImageView(path, view, num);
-//				} else if (data instanceof MyImage) {// 处理自定义MyImage，这里为配合横竖屏切换时方便自定义图片的尺寸
-//					MyImage mi = (MyImage) data;
-//					String path = mi.getHttpUrl();
-//					if(path.startsWith("http")){
-//						view = getHttpPic2ImageView(path, view, num); //加载网络图片
-//					}else{
-//						view = getLocalPic2ImageView(path,view,num); //加载本地图片
-//					}
-//					// 根据外部设置的宽高来限制图片尺寸
-//					LayoutParams para;
-//					para = view.getLayoutParams();
-//					para.width = mi.getWidth();
-//					para.height = mi.getHeight();
-//					view.setLayoutParams(para);
-//
-//				} else if ((data instanceof Bitmap)) {
-//					((ImageView) view).setImageBitmap((Bitmap) data);
-//				}
-//
-//			} else {
-//				((ImageView) view).setVisibility(View.GONE);
-//			}
-//
-//		}
-//	}
 	
-	
-	private ImageView getLocalPic2ImageView_(String path,View view,int num){
+	private void getLocalPic2ImageView(String path,View view,int num){
+		view.setTag(path);
 		Bitmap bitmap = caches.get(path);
 		if(bitmap==null){
+			Log.e(TAG, "getLocalPic2ImageView null-------"+num);
 			caches.remove(path);
-			final Task task = new Task();
+			Task task = new Task();
 			task.path = path;
 			task.num = num;
-			view.setTag(path);
-			task.callback = getImageCallback((ImageView) view,
-					R.drawable.image_type);
+			
+			
+			task.callback = getImageCallback((ImageView) view);
 			if(isLoading){
+				Log.e(TAG, "getLocalPic2ImageView start "+task.num);
 				new GetLocalBitMapThread(task).start();
 			}else{
+				Log.e(TAG, "getLocalPic2ImageView no start "+task.num);
 				new GetLocalBitMapThread(task);
 			}
 
 			((ImageView) view).setImageResource(R.drawable.image_type);
+			
 		} else {
 			// 如果图片未被释放，直接返回该图片
+			Log.e(TAG, "getLocalPic2ImageView -------"+num);
 			((ImageView) view).setImageBitmap(bitmap);
 		}
 		
-		return null;
 	}
 	
-	/**
-	 * 获取本地图片到ImageView
-	 * @param path
-	 * @param view
-	 * @param num
-	 * @return
-	 */
-//	private ImageView getLocalPic2ImageView(String path,View view,int num){
-//
-//		view.setTag(path);
-//		if (caches.containsKey(path)) {
-//			// 取出软引用
-//			SoftReference<Bitmap> rf = caches.get(path);
-//			// 通过软引用，获取图片
-//			Bitmap bitmap = rf.get();
-//			// 如果该图片已经被释放，则将该path对应的键从Map中移除掉
-//			if (bitmap == null) {
-//				// LogUtil.debug(TAG, "bindView", "caches.remove(path)" + path);
-//				caches.remove(path);
-//				final Task task = new Task();
-//				task.path = path;
-//				task.num = num;
-//				task.callback = getImageCallback((ImageView) view,
-//						R.drawable.image_type);
-//				if(isLoading){
-//					new GetLocalBitMapThread(task).start();
-//				}else{
-//					new GetLocalBitMapThread(task);
-//				}
-//
-//				((ImageView) view).setImageResource(R.drawable.image_type);
-//			} else {
-//				// 如果图片未被释放，直接返回该图片
-//				((ImageView) view).setImageBitmap(bitmap);
-//			}
-//		} else {
-//			// 如果缓存中不常在该图片，则创建图片下载任务
-//			// LogUtil.debug(TAG, "bindView", "缓存中不常在该图片，则创建图片下载任务" + path);
-//			final Task task = new Task();
-//			task.path = path;
-//			task.num = num;
-//			task.callback = getImageCallback((ImageView) view,
-//					R.drawable.image_type);
-//			if(isLoading){
-//				new GetLocalBitMapThread(task).start();
-//			}else{
-//				new GetLocalBitMapThread(task);
-//			}
-//			((ImageView) view).setImageResource(R.drawable.image_type);
-//		}
-//		return (ImageView) view;
-//	
-//	}
+
 	
 /**
  * 获取网络图片到ImageView
@@ -340,51 +204,27 @@ public class ImageAdapter extends BaseAdapter {
  * @param num
  * @return
  */
-//	private ImageView getHttpPic2ImageView(String path, View view, int num) {
-//		view.setTag(path);
-//		if (caches.containsKey(path)) {
-//			// 取出软引用
-//			SoftReference<Bitmap> rf = caches.get(path);
-//			// 通过软引用，获取图片
-//			Bitmap bitmap = rf.get();
-//			// 如果该图片已经被释放，则将该path对应的键从Map中移除掉
-//			if (bitmap == null) {
-//				// LogUtil.debug(TAG, "bindView", "caches.remove(path)" + path);
-//				caches.remove(path);
-//				final Task task = new Task();
-//				task.path = path;
-//				task.num = num;
-//				task.callback = getImageCallback((ImageView) view,
-//						R.drawable.image_type);
-//				
-//				new Thread(){
-//					public void run(){
-//						assign(task);
-//					}
-//				}.start();
-//
-//				((ImageView) view).setImageResource(R.drawable.image_type);
-//			} else {
-//				// 如果图片未被释放，直接返回该图片
-//				((ImageView) view).setImageBitmap(bitmap);
-//			}
-//		} else {
-//			// 如果缓存中不常在该图片，则创建图片下载任务
-//			// LogUtil.debug(TAG, "bindView", "缓存中不常在该图片，则创建图片下载任务" + path);
-//			final Task task = new Task();
-//			task.path = path;
-//			task.num = num;
-//			task.callback = getImageCallback((ImageView) view,
-//					R.drawable.image_type);
-//			new Thread(){
-//				public void run(){
-//					assign(task); 
-//				}
-//			}.start();
-//			((ImageView) view).setImageResource(R.drawable.image_type);
-//		}
-//		return (ImageView) view;
-//	}
+	private void getHttpPic2ImageView(String path, View view, int num) {
+		view.setTag(path);
+		Bitmap bitmap = caches.get(path);
+		if(bitmap == null){
+			caches.remove(path);
+			final Task task = new Task();
+			task.path = path;
+			task.num = num;
+			task.callback = getImageCallback((ImageView) view);
+			new Thread(){
+				public void run(){
+					assign(task); 
+				}
+			}.start();
+			((ImageView) view).setImageResource(R.drawable.image_type);
+		}else {
+			// 如果图片未被释放，直接返回该图片
+			((ImageView) view).setImageBitmap(bitmap);
+		}
+		
+	}
 
 	public boolean isLoading() {
 		return isLoading;
@@ -395,6 +235,7 @@ public class ImageAdapter extends BaseAdapter {
 		if(!isLoading){
 			bigCurrentNum = 0;
 			smallCurrentNum = 0;
+			localCurrentNum = 0;
 		}
 		
 	}
@@ -515,7 +356,13 @@ public class ImageAdapter extends BaseAdapter {
 				return;
 			}
 //			Log.e(TAG, "加载图片：localCurrentNum:"+localCurrentNum+" localMax:"+localMax);
+//			Log.e(TAG, "加载图片：t.num:"+t.num);
 			t.bitmap = getBitMap(new File(t.path));
+//			Log.e(TAG, "t.bitmap:"+t.bitmap);
+			if(t.bitmap!=null){
+				Log.e(TAG, "缓存图片：t.num:"+t.num);
+				caches.put(t.path, t.bitmap);
+			}
 			if (handler != null) {
 				// 创建消息对象，并将完成的任务添加到消息对象中
 				Message msg = handler.obtainMessage();
@@ -819,10 +666,10 @@ public class ImageAdapter extends BaseAdapter {
 			case 2://不分大小
 				// 调用callback对象的loadImage方法，并将图片路径和图片回传给adapter
 				task.callback.loadImage(task.path, task.bitmap);
+				
 				if(localCurrentNum>0) localCurrentNum--;
 				break;
 			}
-			System.gc();
 
 		}
 
@@ -840,20 +687,17 @@ public class ImageAdapter extends BaseAdapter {
 	 *            图片加载完成前显示的图片资源ID
 	 * @return
 	 */
-	private ImageCallback getImageCallback(final ImageView imageView,
-			final int resId) {
+	private ImageCallback getImageCallback(final ImageView imageView)
+			 {
 		return new ImageCallback() {
 
 			@Override
 			public void loadImage(String path, Bitmap bitmap) {
-				Log.e(TAG, "path:"+path);
-				Log.e(TAG, "imageView:"+imageView.getTag());
 				if (path.equals(imageView.getTag().toString())
 						&& bitmap != null) {
 					imageView.setImageBitmap(bitmap);
-				} else {
-					imageView.setImageResource(resId);
-				}
+					
+				} 
 			}
 		};
 	}
@@ -909,6 +753,8 @@ public class ImageAdapter extends BaseAdapter {
 								t.interrupt();
 //								 LogUtil.error(TAG, "中断小图线程：" + t.getTask().getNum());
 							}
+						}else{
+							
 						}
 					}
 				} else {
@@ -923,8 +769,10 @@ public class ImageAdapter extends BaseAdapter {
 						if (localThreadList != null) {
 							while (localThreadList.size() > 0) {
 								GetLocalBitMapThread t = localThreadList.remove(0);
-								if (!isLoading)
+								if (!isLoading){
+									Log.e(TAG, "忽略本地图片加载线程：" + t.getTask().getNum());
 									return;
+								}
 								if (t.getState().name().equals("NEW")) {
 									if (t.getTask().getNum() >= start
 											&& t.getTask().getNum() <= end) {
@@ -934,11 +782,13 @@ public class ImageAdapter extends BaseAdapter {
 											// TODO: handle exception
 										}
 										
-//										 LogUtil.error(TAG, "启动本地图片加载线程：" + t.getTask().getNum());
+										 Log.e(TAG, "启动本地图片加载线程：" + t.getTask().getNum());
 									} else {
 										t.interrupt();
-//										 LogUtil.error(TAG, "中断本地图片加载线程：" + t.getTask().getNum());
+										 Log.e(TAG, "中断本地图片加载线程：" + t.getTask().getNum());
 									}
+								}else{
+									Log.e(TAG, "忽略1本地图片加载线程：" + t.getTask().getNum());
 								}
 							}
 						} else {
@@ -982,6 +832,7 @@ public class ImageAdapter extends BaseAdapter {
 		FileInputStream is = null;
 		byte[] icon = null;
 		BitmapFactory.Options opt = null;
+		Bitmap tempBitmap = null;
 		try{
 			if(file.length()<1024*1024*5){ //低于10M，加载图片
 				is = new FileInputStream(file);
@@ -1001,14 +852,17 @@ public class ImageAdapter extends BaseAdapter {
 					opt.inSampleSize = 1;
 				}
 				opt.inJustDecodeBounds = false;
-				return  BitmapFactory.decodeByteArray(icon, 0, icon.length,
+				tempBitmap = BitmapFactory.decodeByteArray(icon, 0, icon.length,
 						opt);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
+		}catch(Error e2){
+			e2.printStackTrace();
 		}
+		Log.e(TAG, "getBitmap:"+tempBitmap);
+		return tempBitmap;
 		
-		return null;
 	}
 	
 	class ListItemView{

@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -133,6 +135,38 @@ public class ImgListFragment extends Fragment {
 				LogUtil.info(TAG, "listView.setOnItemClickListener", dataList.get(arg2).getFileName());
 				
 			}
+		});
+		
+		listView.setOnScrollListener(new OnScrollListener(){
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+	                   int visibleItemCount, int totalItemCount) {
+				if(imgAdapter!=null){
+					Log.e(TAG, "start:"+firstVisibleItem);
+					imgAdapter.setStart(firstVisibleItem);
+					imgAdapter.setEnd(firstVisibleItem+visibleItemCount);
+            }
+				
+			}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if (scrollState == OnScrollListener.SCROLL_STATE_FLING
+	                       || scrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+	                   //CancelIconThread();
+					imgAdapter.setLoading(false);
+	                   return;
+	               }
+	 
+	               if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+	                   //GetIconOnThread();
+	            	   imgAdapter.setLoading(true);
+	            	   imgAdapter.runLoading();
+	                   return;
+	               }
+			}
+			
 		});
 	}
 	

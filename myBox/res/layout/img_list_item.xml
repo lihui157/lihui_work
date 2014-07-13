@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="3dp"
