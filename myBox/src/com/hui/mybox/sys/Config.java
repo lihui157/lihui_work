@@ -17,4 +17,13 @@ public class Config {
 		
 	}
 	
+	public class BroadcastConf{
+		
+		public static final String ACT_REFRESH_IMG = "refresh_img";
+		
+		public static final String ACT_REFRESH_VIDEO = "refresh_video";
+		
+		public static final String ACT_REFRESH_MUSIC = "refresh_music";
+	}
+	
 }

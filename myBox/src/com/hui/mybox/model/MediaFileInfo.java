@@ -1,6 +1,7 @@
 package com.hui.mybox.model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,12 @@ import java.util.List;
  * @author Administrator
  *
  */
-public class MediaFileInfo {
+public class MediaFileInfo implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * ÎÄ¼þ¼Ð
 	 */

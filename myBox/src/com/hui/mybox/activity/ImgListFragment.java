@@ -40,9 +40,14 @@ public class ImgListFragment extends Fragment {
 	private ListView listView;
 	private ImageAdapter imgAdapter;
 	private List<MediaFileInfo> dataList;
+	private ImgListFragmentListener mCallback;
 	
 	public static final int VAL_GET_FILE = 1001;
 	public static final int VAL_REFRESH_ADAPTER = 1002;
+	
+	public interface ImgListFragmentListener{
+//		public void refreshImgList();
+	}
 	
 	private Handler handler = new Handler(){
 
@@ -74,8 +79,13 @@ public class ImgListFragment extends Fragment {
 
 	@Override
 	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
 		super.onAttach(activity);
+		try {
+			mCallback = (ImgListFragmentListener) activity;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 
@@ -168,6 +178,10 @@ public class ImgListFragment extends Fragment {
 			}
 			
 		});
+	}
+	
+	public void refreshList(){
+		imgAdapter.notifyDataSetChanged();
 	}
 	
 

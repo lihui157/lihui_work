@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.hui.mybox.model.MediaFileInfo;
+import com.hui.mybox.utils.BoxUtil;
 import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
 
@@ -61,8 +62,11 @@ public class FileFilter implements Runnable {
 			
 			//写入文件缓存
 			FileUtil.newFile(fileRoot+Config.Sys.IMG_INDEX_FILE, new Gson().toJson(MediaApp.imgListTemp));
+			BoxUtil.sentBroadcast(c, Config.BroadcastConf.ACT_REFRESH_IMG,null);
 			FileUtil.newFile(fileRoot+Config.Sys.MUSIC_INDEX_FILE, new Gson().toJson(MediaApp.audioListTemp));
+			BoxUtil.sentBroadcast(c, Config.BroadcastConf.ACT_REFRESH_MUSIC,null);
 			FileUtil.newFile(fileRoot+Config.Sys.VIDEO_INDEX_FILE, new Gson().toJson(MediaApp.videoListTemp));
+			BoxUtil.sentBroadcast(c, Config.BroadcastConf.ACT_REFRESH_VIDEO,null);
 //			FileUtil.writeText(rootPath+Config.System.LOCAL_FOLDER_LIST_PATH, new Gson().toJson(MediaApp.folderMapTemp));
 //			
 			//替换成正式缓存

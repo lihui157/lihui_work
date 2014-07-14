@@ -15,8 +15,11 @@ import com.hui.mybox.model.MediaFileInfo;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 
 public class BoxUtil {
@@ -141,6 +144,21 @@ public class BoxUtil {
 		if (strAfterComma == "")
 			strAfterComma = ".0";
 		return filesize / intDivisor + "." + strAfterComma + " " + strUnit;
+	}
+	
+	/**
+	 * ·¢ËÍ¹ã²¥
+	 * @param context
+	 * @param action
+	 * @param bundle
+	 */
+	public static void sentBroadcast(Context context,String action,Bundle bundle){
+		Log.e("", "sentBroadcast:"+action);
+		Intent i = new Intent();
+		i.setAction(action);
+		if(bundle!=null)
+		i.putExtras(bundle);
+		context.sendBroadcast(i);
 	}
 	
 	
