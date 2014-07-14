@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    
     tools:context="com.hui.delightbox.MainActivity$PlaceholderFragment" >
 
     <ImageView
@@ -21,22 +22,24 @@
         android:layout_toRightOf="@+id/iv_icon"
         android:ellipsize="middle"
         android:singleLine="true"
+        android:textSize="16sp"
         android:text="name" />
-
-    <TextView
-        android:id="@+id/tv_img_item_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tv_img_item_name"
-        android:layout_below="@+id/tv_img_item_name"
-        android:text="size" />
 
     <TextView
         android:id="@+id/tv_img_item_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_img_item_size"
+        android:layout_alignBottom="@+id/iv_icon"
         android:layout_toRightOf="@+id/iv_icon"
         android:text="time" />
+
+    <TextView
+        android:id="@+id/tv_img_item_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_img_item_time"
+        android:layout_marginBottom="22dp"
+        android:layout_toRightOf="@+id/iv_icon"
+        android:text="size" />
 
 </RelativeLayout>

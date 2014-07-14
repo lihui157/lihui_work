@@ -10,17 +10,20 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import com.hui.mybox.R;
 import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.utils.BoxUtil;
 import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.PicUtil;
 import com.hui.mybox.view.MediaFileAdapter.ListItemView;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -28,11 +31,14 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.util.LruCache;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -80,6 +86,8 @@ public class ImageAdapter extends BaseAdapter {
 	private LayoutInflater listContainer;
 	
 	private Context context;
+	
+	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
 	
 	public ImageAdapter(Context context,List<MediaFileInfo> dataList){
 		this.data = dataList;
@@ -154,12 +162,15 @@ public class ImageAdapter extends BaseAdapter {
 			}else{
 				getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //加载本地图片
 			}
-	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? String.valueOf(data.get(arg0).getLength()):"");
-	        listItemView.time.setText(Long.toString(data.get(arg0).getLastModifTime()));
+	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? "":BoxUtil.convertFileSize(data.get(arg0).getLength()));
+	         
+	        listItemView.time.setText(sdf.format((data.get(arg0).getLastModifTime())));
 	        
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Animation animation = AnimationUtils.loadAnimation(context, R.anim.right_in);
+		convertView.startAnimation(animation);
         return convertView;   
     
 	}
@@ -355,12 +366,9 @@ public class ImageAdapter extends BaseAdapter {
 				this.interrupt();
 				return;
 			}
-//			Log.e(TAG, "加载图片：localCurrentNum:"+localCurrentNum+" localMax:"+localMax);
-//			Log.e(TAG, "加载图片：t.num:"+t.num);
 			t.bitmap = getBitMap(new File(t.path));
 //			Log.e(TAG, "t.bitmap:"+t.bitmap);
 			if(t.bitmap!=null){
-				Log.e(TAG, "缓存图片：t.num:"+t.num);
 				caches.put(t.path, t.bitmap);
 			}
 			if (handler != null) {
@@ -389,7 +397,6 @@ public class ImageAdapter extends BaseAdapter {
 		public GetBigBitMapThread(Task t) {
 			this.t = t;
 			bigThreadList.add(this);
-			Log.d(TAG, "GetBigBitMapThread 创建 "+t.getNum());
 		}
 
 		@Override
@@ -413,7 +420,6 @@ public class ImageAdapter extends BaseAdapter {
 				this.interrupt();
 				return;
 			}
-			Log.e(TAG, "加载图片：bigCurrentNum:"+bigCurrentNum+" bigMax:"+bigMax);
 			putImage2Cache(t);
 			if (handler != null) {
 				// 创建消息对象，并将完成的任务添加到消息对象中
@@ -440,7 +446,6 @@ public class ImageAdapter extends BaseAdapter {
 		public GetSmallBitMapThread(Task t) {
 			this.t = t;
 			smallThreadList.add(this);
-			Log.d(TAG, "GetSmallBitMapThread 创建 "+t.getNum());
 		}
 
 		@Override
@@ -547,7 +552,6 @@ public class ImageAdapter extends BaseAdapter {
 						// 从本地加载图片
 						if(cacheFile.length()<1024*1024*5){ //低于10M，加载图片
 							is = new FileInputStream(cacheFile);
-							Log.e(TAG,"本地加载图片："+cacheFile.getName());
 							icon = getBytes(is);
 							// bitmap = BitmapFactory.decodeStream(is);
 							opt = new BitmapFactory.Options();
@@ -589,8 +593,6 @@ public class ImageAdapter extends BaseAdapter {
 							e1.printStackTrace();
 						}
 					}
-//					LogUtil.debug(TAG, "putImage2Cache", "--"+t.path);
-//					caches.put(t.path, new SoftReference<Bitmap>(t.bitmap));
 					caches.put(t.path, t.bitmap);
 	}
 
@@ -770,7 +772,6 @@ public class ImageAdapter extends BaseAdapter {
 							while (localThreadList.size() > 0) {
 								GetLocalBitMapThread t = localThreadList.remove(0);
 								if (!isLoading){
-									Log.e(TAG, "忽略本地图片加载线程：" + t.getTask().getNum());
 									return;
 								}
 								if (t.getState().name().equals("NEW")) {
@@ -782,13 +783,10 @@ public class ImageAdapter extends BaseAdapter {
 											// TODO: handle exception
 										}
 										
-										 Log.e(TAG, "启动本地图片加载线程：" + t.getTask().getNum());
 									} else {
 										t.interrupt();
-										 Log.e(TAG, "中断本地图片加载线程：" + t.getTask().getNum());
 									}
 								}else{
-									Log.e(TAG, "忽略1本地图片加载线程：" + t.getTask().getNum());
 								}
 							}
 						} else {
@@ -860,10 +858,11 @@ public class ImageAdapter extends BaseAdapter {
 		}catch(Error e2){
 			e2.printStackTrace();
 		}
-		Log.e(TAG, "getBitmap:"+tempBitmap);
 		return tempBitmap;
 		
 	}
+	
+
 	
 	class ListItemView{
 		TextView time;

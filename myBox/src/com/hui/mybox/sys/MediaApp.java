@@ -1,5 +1,6 @@
 package com.hui.mybox.sys;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
+
 
 
 
@@ -34,6 +36,8 @@ import android.util.Log;
 public class MediaApp extends Application {
 	
 	private static final String TAG = "MediaApp";
+	
+	public static SDCardFileListener listener;
 	
 	//本地图片类型文件索引列表
 	public static LinkedList<MediaFileInfo> imgList;
@@ -214,7 +218,25 @@ public class MediaApp extends Application {
                     getBaseContext().getResources().getDisplayMetrics());
         }
 
-        instance = this;
+		instance = this;
+
+		new Thread() {
+			public void run() {
+				try {
+					if (listener == null) {
+						listener = new SDCardFileListener(Environment
+								.getExternalStorageDirectory()
+								.getCanonicalPath());
+						listener.startWatching();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+        	
+			
+		
 
     }
 

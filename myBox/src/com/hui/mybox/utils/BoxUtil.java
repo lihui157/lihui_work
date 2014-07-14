@@ -118,6 +118,31 @@ public class BoxUtil {
 		return mBitmap;
 	}
 	
+	/**
+	 * 文件长度格式化输出
+	 * @param filesize
+	 * @return
+	 */
+	public static String convertFileSize(long filesize) {
+		String strUnit = "Bytes";
+		String strAfterComma = "";
+		int intDivisor = 1;
+		if (filesize >= 1024 * 1024)
+		{
+			strUnit = "MB";
+			intDivisor = 1024 * 1024;
+		}else if (filesize >= 1024){
+			strUnit = "KB";
+			intDivisor = 1024;
+		}
+		if (intDivisor == 1)
+			return filesize + " " + strUnit;
+		strAfterComma = "" + 100 * (filesize % intDivisor) / intDivisor;
+		if (strAfterComma == "")
+			strAfterComma = ".0";
+		return filesize / intDivisor + "." + strAfterComma + " " + strUnit;
+	}
+	
 	
 	
 }
