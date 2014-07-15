@@ -153,7 +153,7 @@ public class ImgListFragment extends Fragment {
 			public void onScroll(AbsListView view, int firstVisibleItem,
 	                   int visibleItemCount, int totalItemCount) {
 				if(imgAdapter!=null){
-					Log.e(TAG, "start:"+firstVisibleItem);
+//					Log.e(TAG, "start:"+firstVisibleItem);
 					imgAdapter.setStart(firstVisibleItem);
 					imgAdapter.setEnd(firstVisibleItem+visibleItemCount);
             }

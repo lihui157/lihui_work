@@ -180,7 +180,6 @@ public class ImageAdapter extends BaseAdapter {
 		view.setTag(path);
 		Bitmap bitmap = caches.get(path);
 		if(bitmap==null){
-			Log.e(TAG, "getLocalPic2ImageView null-------"+num);
 			caches.remove(path);
 			Task task = new Task();
 			task.path = path;
@@ -189,10 +188,8 @@ public class ImageAdapter extends BaseAdapter {
 			
 			task.callback = getImageCallback((ImageView) view);
 			if(isLoading){
-				Log.e(TAG, "getLocalPic2ImageView start "+task.num);
 				new GetLocalBitMapThread(task).start();
 			}else{
-				Log.e(TAG, "getLocalPic2ImageView no start "+task.num);
 				new GetLocalBitMapThread(task);
 			}
 
@@ -200,7 +197,6 @@ public class ImageAdapter extends BaseAdapter {
 			
 		} else {
 			// 如果图片未被释放，直接返回该图片
-			Log.e(TAG, "getLocalPic2ImageView -------"+num);
 			((ImageView) view).setImageBitmap(bitmap);
 		}
 		
@@ -342,7 +338,7 @@ public class ImageAdapter extends BaseAdapter {
 		public GetLocalBitMapThread(Task t) {
 			this.t = t;
 			localThreadList.add(this);
-			Log.d(TAG, "GetLocalBitMapThread 创建 "+t.getNum());
+//			Log.d(TAG, "GetLocalBitMapThread 创建 "+t.getNum());
 		}
 
 		@Override

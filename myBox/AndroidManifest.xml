@@ -24,7 +24,7 @@
         android:name="com.hui.mybox.sys.MediaApp"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppBaseTheme" >
         <activity
             android:name="com.hui.mybox.activity.BoxMainFrameAct"
             android:label="@string/app_name" >

@@ -2,16 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    
+    android:background="@drawable/gradient_bg"
     tools:context="com.hui.delightbox.MainActivity$PlaceholderFragment" >
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="3dp"
+        android:background="#33ffffff"
+        android:padding="2dp"
         android:src="@drawable/ic_launcher" />
 
     <TextView
@@ -23,6 +25,7 @@
         android:ellipsize="middle"
         android:singleLine="true"
         android:textSize="16sp"
+        android:textColor="#ffffff"
         android:text="name" />
 
     <TextView
@@ -31,15 +34,17 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_icon"
         android:layout_toRightOf="@+id/iv_icon"
+        android:textColor="#aaaaaa"
         android:text="time" />
 
     <TextView
         android:id="@+id/tv_img_item_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_img_item_time"
-        android:layout_marginBottom="22dp"
+        android:layout_below="@+id/tv_img_item_name"
+        android:layout_marginTop="14dp"
         android:layout_toRightOf="@+id/iv_icon"
-        android:text="size" />
+        android:text="size"
+        android:textColor="#aaaaaa" />
 
 </RelativeLayout>
