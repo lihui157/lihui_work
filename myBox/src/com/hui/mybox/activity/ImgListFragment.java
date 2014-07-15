@@ -108,8 +108,6 @@ public class ImgListFragment extends Fragment {
 				dataList = new ArrayList<MediaFileInfo>();
 			}
 			dataList.clear();
-			Log.i(TAG, "-----");
-			Log.i(TAG, FileUtil.readTextFile(imgIndexPath));
 			ArrayList<MediaFileInfo> tempList = new Gson().fromJson(
 					FileUtil.readTextFile(imgIndexPath), 
 					new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()

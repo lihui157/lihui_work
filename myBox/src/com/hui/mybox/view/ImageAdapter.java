@@ -156,12 +156,18 @@ public class ImageAdapter extends BaseAdapter {
 	        } 
 	        
 	        listItemView.name.setText(data.get(arg0).getFileName());
-//	        data.get(arg0).setPath("http://img0.bdstatic.com/img/image/shouye/dengni46.jpg");
-	        if(data.get(arg0).getPath().startsWith("http")){
-	        	getHttpPic2ImageView(data.get(arg0).getPath(), listItemView.icon, arg0); //º”‘ÿÕ¯¬ÁÕº∆¨
-			}else{
-				getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //º”‘ÿ±æµÿÕº∆¨
-			}
+	        if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_IMG){
+	        	if(data.get(arg0).getPath().startsWith("http")){
+		        	getHttpPic2ImageView(data.get(arg0).getPath(), listItemView.icon, arg0); //º”‘ÿÕ¯¬ÁÕº∆¨
+				}else{
+					getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //º”‘ÿ±æµÿÕº∆¨
+				}
+	        }else if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_VIDEO){
+	        	listItemView.icon.setImageResource(R.drawable.video_type);
+	        }else if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_AUDIO){
+	        	listItemView.icon.setImageResource(R.drawable.music_type);
+	        }
+	        
 	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? "":BoxUtil.convertFileSize(data.get(arg0).getLength()));
 	         
 	        listItemView.time.setText(sdf.format((data.get(arg0).getLastModifTime())));
