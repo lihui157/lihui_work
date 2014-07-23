@@ -15,10 +15,16 @@ import com.hui.mybox.utils.LogUtil;
 import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -65,6 +71,7 @@ public class MusicListFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		initUI();
 		handler.sendEmptyMessage(VAL_GET_FILE);
+		
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -126,6 +133,10 @@ public class MusicListFragment extends Fragment {
 			}
 		});
 	}
+	
+	
+	
+	
 	
 
 }
