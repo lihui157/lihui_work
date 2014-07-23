@@ -12,6 +12,7 @@ import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.sys.Config;
 import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
+import com.hui.mybox.view.ImageAdapter;
 import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
@@ -40,7 +41,7 @@ public class MusicListFragment extends Fragment {
 	private static final String TAG = "MusicListFragment";
 	
 	private ListView listView;
-	private MediaFileAdapter imgAdapter;
+	private ImageAdapter mideaAdapter;
 	private List<MediaFileInfo> dataList;
 	
 	public static final int VAL_GET_FILE = 1001;
@@ -98,11 +99,15 @@ public class MusicListFragment extends Fragment {
 					+Config.Sys.APP_ROOT
 					+Config.Sys.MUSIC_INDEX_FILE;
 			if(dataList==null){
-				dataList = new Gson().fromJson(
-						FileUtil.readTextFile(musicIndexPath), 
-						new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
-						);
-				
+				dataList = new ArrayList<MediaFileInfo>();
+			}
+			dataList.clear();
+			ArrayList<MediaFileInfo> tempList = new Gson().fromJson(
+					FileUtil.readTextFile(musicIndexPath), 
+					new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
+					);
+			for(MediaFileInfo info:tempList){
+				dataList.add(info);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -110,8 +115,8 @@ public class MusicListFragment extends Fragment {
 	}
 	
 	private void refreshData(){
-		if(imgAdapter==null) return;
-		imgAdapter.notifyDataSetChanged();
+		if(mideaAdapter==null) return;
+		mideaAdapter.notifyDataSetChanged();
 	}
 	
 	private void initUI(){
@@ -119,10 +124,10 @@ public class MusicListFragment extends Fragment {
 		if(dataList==null){
 			dataList = new ArrayList<MediaFileInfo>();
 		}
-		if(imgAdapter==null){
-			imgAdapter = new MediaFileAdapter(getActivity(), dataList);
+		if(mideaAdapter==null){
+			mideaAdapter = new ImageAdapter(getActivity(), dataList);
 		}
-		listView.setAdapter(imgAdapter);
+		listView.setAdapter(mideaAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override

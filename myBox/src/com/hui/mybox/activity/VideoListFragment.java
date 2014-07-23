@@ -12,6 +12,7 @@ import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.sys.Config;
 import com.hui.mybox.utils.FileUtil;
 import com.hui.mybox.utils.LogUtil;
+import com.hui.mybox.view.ImageAdapter;
 import com.hui.mybox.view.MediaFileAdapter;
 
 import android.app.Activity;
@@ -34,7 +35,7 @@ public class VideoListFragment extends Fragment {
 	private static final String TAG = "VideoListFragment";
 	
 	private ListView listView;
-	private MediaFileAdapter imgAdapter;
+	private ImageAdapter imgAdapter;
 	private List<MediaFileInfo> dataList;
 	
 	public static final int VAL_GET_FILE = 1001;
@@ -91,11 +92,15 @@ public class VideoListFragment extends Fragment {
 					+Config.Sys.APP_ROOT
 					+Config.Sys.VIDEO_INDEX_FILE;
 			if(dataList==null){
-				dataList = new Gson().fromJson(
-						FileUtil.readTextFile(videoIndexPath), 
-						new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
-						);
-				
+				dataList = new ArrayList<MediaFileInfo>();
+			}
+			dataList.clear();
+			ArrayList<MediaFileInfo> tempList = new Gson().fromJson(
+					FileUtil.readTextFile(videoIndexPath), 
+					new TypeToken<ArrayList<MediaFileInfo>>(){}.getType()
+					);
+			for(MediaFileInfo info:tempList){
+				dataList.add(info);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -113,7 +118,7 @@ public class VideoListFragment extends Fragment {
 			dataList = new ArrayList<MediaFileInfo>();
 		}
 		if(imgAdapter==null){
-			imgAdapter = new MediaFileAdapter(getActivity(), dataList);
+			imgAdapter = new ImageAdapter(getActivity(), dataList);
 		}
 		listView.setAdapter(imgAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
