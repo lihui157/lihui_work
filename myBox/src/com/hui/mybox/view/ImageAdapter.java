@@ -21,6 +21,7 @@ import com.hui.mybox.R;
 import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.utils.BoxUtil;
 import com.hui.mybox.utils.FileUtil;
+import com.hui.mybox.utils.MediaUtil;
 import com.hui.mybox.utils.PicUtil;
 import com.hui.mybox.view.MediaFileAdapter.ListItemView;
 
@@ -28,8 +29,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.util.LruCache;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -163,9 +166,22 @@ public class ImageAdapter extends BaseAdapter {
 					getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //º”‘ÿ±æµÿÕº∆¨
 				}
 	        }else if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_VIDEO){
-	        	listItemView.icon.setImageResource(R.drawable.video_type);
+	        	Bitmap bm = ThumbnailUtils.createVideoThumbnail(data.get(arg0).getPath(), Thumbnails.MICRO_KIND);
+	        	if(bm==null){
+	        		listItemView.icon.setImageResource(R.drawable.video_type);
+	        	}else{
+	        		listItemView.icon.setImageBitmap(bm);
+	        	}
+	        	
 	        }else if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_AUDIO){
+//	        	Bitmap bm = MediaUtil.getImage(context,data.get(arg0).getPath());
+//	        	if(bm==null){
+//	        		listItemView.icon.setImageResource(R.drawable.music_type);
+//	        	}else{
+//	        		listItemView.icon.setImageBitmap(bm);
+//	        	}
 	        	listItemView.icon.setImageResource(R.drawable.music_type);
+	        	
 	        }
 	        
 	        listItemView.size.setText((data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_FOLDER)? "":BoxUtil.convertFileSize(data.get(arg0).getLength()));
