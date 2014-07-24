@@ -21,7 +21,6 @@ import com.hui.mybox.R;
 import com.hui.mybox.model.MediaFileInfo;
 import com.hui.mybox.utils.BoxUtil;
 import com.hui.mybox.utils.FileUtil;
-import com.hui.mybox.utils.MediaUtil;
 import com.hui.mybox.utils.PicUtil;
 import com.hui.mybox.view.MediaFileAdapter.ListItemView;
 
