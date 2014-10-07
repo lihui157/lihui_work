@@ -1,0 +1,915 @@
+package net.cstong.android.ui;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import net.cstong.android.R;
+import net.cstong.android.api.ForumApi;
+import net.cstong.android.api.ForumApi.ForumInfo;
+import net.cstong.android.api.ForumApi.ThreadDetail;
+import net.cstong.android.api.ForumApi.ThreadDetailList;
+import net.cstong.android.api.ForumApi.ThreadInfo;
+import net.cstong.android.api.PostApi;
+import net.cstong.android.api.PostApi.PostResult;
+import net.cstong.android.api.PostApi.UploadInfo;
+import net.cstong.android.ui.adapter.ThreadDetailAdapter;
+import net.cstong.android.ui.photo.PostViewPhotoAdapter;
+import net.cstong.android.ui.widget.ScrollGridView;
+import net.cstong.android.util.Constant;
+import net.cstong.android.util.EmotionUtil;
+import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ViewFlipper;
+
+import com.ab.http.AbRequestParams;
+import com.ab.http.AbStringHttpResponseListener;
+import com.ab.model.AbResult;
+import com.ab.util.AbDateUtil;
+import com.ab.util.AbFileUtil;
+import com.ab.util.AbImageUtil;
+import com.ab.view.pullview.AbPullToRefreshView;
+import com.ab.view.pullview.AbPullToRefreshView.OnFooterLoadListener;
+import com.ab.view.pullview.AbPullToRefreshView.OnHeaderRefreshListener;
+
+public class ThreadReadFragment extends Fragment {
+	protected static final String TAG = "ThreadReadFragment";
+	protected ThreadReadActivity mActivity = null;
+	protected ThreadInfo threadInfo = null;
+	private AbPullToRefreshView mAbPullToRefreshView = null;
+	private ListView mListView = null;
+	private ThreadDetailAdapter myListViewAdapter = null;
+	protected ThreadDetailList threadDetails = new ThreadDetailList();
+	protected ThreadDetailList threadDetailsNew = new ThreadDetailList();
+	protected int pageIndex = 1; // 下次翻页的页码
+	protected int pageSize = 20; // 翻页条数
+	protected int prevCount = 20;
+
+	protected Button sendBtn;
+	protected Button openPhotoBtn;
+	protected Button addPhotoBtn;
+	protected Button emotionBtn;
+	protected Button takePhotoBtn;
+	protected EditText postContent;
+	protected ImageButton clearContentBtn;
+	protected int currentGridIndex = -1;
+
+	private boolean expanded = false;
+	private boolean photoExpanded = false;
+	private boolean moveable = true;
+	private float startX = 0;
+	protected static int EMOTION_PER_PAGE = 20;
+	protected static int PHOTO_PER_PAGE = 4;
+	protected String contentWithSign = null;
+
+	ArrayList<ImageView> pointList = null;
+	ArrayList<ImageView> photopointList = null;
+	ArrayList<ArrayList<HashMap<String, Object>>> listGrid = null;
+	ArrayList<ArrayList<HashMap<String, Object>>> photolistGrid = null;
+	protected ViewFlipper viewFlipper = null;
+	protected ViewFlipper photoFlipper = null;
+	protected LinearLayout faceLayout = null;
+	protected LinearLayout photoLayout = null;
+	protected LinearLayout photoButtonsLayout = null;
+	protected LinearLayout emotionLayout = null;
+	protected LinearLayout pagePoint = null;
+	protected LinearLayout photoPagePoint = null;
+	protected LinearLayout fillGapLinear = null;
+	protected ScrollGridView mGridview;
+	protected String takenPhotoFilename = null;
+	protected File mCurrentPhotoFile = null;
+	protected PostResult postResult = null;
+	protected PostViewPhotoAdapter adapter;
+	protected ForumInfo forumInfo = null;
+
+	protected ArrayList<String> localImgs = new ArrayList<String>();
+	protected ArrayList<String> imgUrls = new ArrayList<String>();
+	public Uri fileUri = null;
+	public ArrayList<File> tmpFileList = new ArrayList<File>();
+	public int uploadedFiles = 0;
+
+	public static ThreadReadFragment newInstance(final ThreadInfo threadInfo) {
+		ThreadReadFragment fragment = new ThreadReadFragment();
+		fragment.threadInfo = threadInfo;
+		return fragment;
+	}
+
+	@Override
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_thread_detail_list, null);
+		mActivity = (ThreadReadActivity) getActivity();
+
+		// 获取ListView对象
+		mAbPullToRefreshView = (AbPullToRefreshView) view.findViewById(R.id.mPullRefreshView);
+		mListView = (ListView) view.findViewById(R.id.mListView);
+
+		// 设置进度条的样式
+		mAbPullToRefreshView.getHeaderView().setHeaderProgressBarDrawable(getResources().getDrawable(R.drawable.progress_circular));
+		mAbPullToRefreshView.getFooterView().setFooterProgressBarDrawable(getResources().getDrawable(R.drawable.progress_circular));
+
+		// 使用自定义的Adapter
+		myListViewAdapter = new ThreadDetailAdapter(mActivity, threadDetails);
+		mListView.setAdapter(myListViewAdapter);
+
+		// item被点击事件
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+				Log.d(TAG, "id:" + id + " position:" + position + " view:" + view.toString());
+				ThreadDetail threadDetail = (ThreadDetail) myListViewAdapter.getItem(position);
+				AbRequestParams params = mActivity.replyParams;
+				if (position == 0) {
+					params.put("_getHtml", String.valueOf(1));
+					params.remove("pid");
+				} else {
+					params.put("_getHtml", String.valueOf(2));
+					params.put("pid", String.valueOf(threadDetail.pid));
+					String replyPrefix = "回复" + threadDetail.createdUsername + ":";
+					postContent.setText(replyPrefix);
+					postContent.setSelection(replyPrefix.length());
+				}
+				params.put("lou", String.valueOf(position));
+			}
+		});
+
+		// 设置监听器
+		mAbPullToRefreshView.setOnHeaderRefreshListener(new OnHeaderRefreshListener() {
+			@Override
+			public void onHeaderRefresh(final AbPullToRefreshView view) {
+				// getThreadDetail();
+				// mAbPullToRefreshView.onHeaderRefreshFinish();
+			}
+		});
+		mAbPullToRefreshView.setOnFooterLoadListener(new OnFooterLoadListener() {
+			@Override
+			public void onFooterLoad(final AbPullToRefreshView view) {
+				getThreadDetail();
+				mAbPullToRefreshView.onFooterLoadFinish();
+			}
+		});
+
+		listGrid = new ArrayList<ArrayList<HashMap<String, Object>>>();
+		photolistGrid = new ArrayList<ArrayList<HashMap<String, Object>>>();
+		pointList = new ArrayList<ImageView>();
+		photopointList = new ArrayList<ImageView>();
+		addFaceData();
+
+		initReplyBar(view);
+
+		return view;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart");
+		getThreadDetail();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	public void onActivityCreated(final Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		System.gc();
+		Runtime.getRuntime().gc();
+	}
+
+	public void initReplyBar(final View view) {
+		/**
+		AbBottomBar mAbBottomBar = getBottomBar();
+		View view =mInflater.inflate(R.layout.thread_reply_bar, null);
+		**/
+
+		openPhotoBtn = (Button) view.findViewById(R.id.reply_openphoto);
+		openPhotoBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View arg0) {
+				currentGridIndex = 2;
+				if (photoExpanded) {
+					switchTab(0, false);
+					InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+					/**
+					 * height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+					 * 再次打开ViewFlipper时画面在动的结果,
+					 * 为了避免因为1dip的高度产生一个白缝，所以这里在ViewFlipper所在的RelativeLayout
+					 * 最上面添加了一个1dip高的黑色色块
+					 */
+				} else {
+					switchTab(0, true);
+					setPointEffect(0);
+				}
+			}
+		});
+
+		addPhotoBtn = (Button) view.findViewById(R.id.reply_addphoto);
+		addPhotoBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View arg0) {
+				currentGridIndex = 0;
+				try {
+					Intent intent = new Intent(mActivity, ShowImageActivity.class);
+					startActivityForResult(intent, Constant.INTENTRESULT_ADD_PHOTO);
+				} catch (ActivityNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		takePhotoBtn = (Button) view.findViewById(R.id.reply_takephoto);
+		takePhotoBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View arg0) {
+				currentGridIndex = 1;
+				try {
+					if (!AbFileUtil.isCanUseSD()) {
+						mActivity.showToast("请插入SD卡");
+						return;
+					}
+					Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+					fileUri = mActivity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+					startActivityForResult(intent, Constant.INTENTRESULT_TAKE_PHOTO);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		emotionBtn = (Button) view.findViewById(R.id.reply_emotion);
+		emotionBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				currentGridIndex = 2;
+				if (expanded) {
+					switchTab(1, false);
+					InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+					/**
+					 * height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+					 * 再次打开ViewFlipper时画面在动的结果,
+					 * 为了避免因为1dip的高度产生一个白缝，所以这里在ViewFlipper所在的RelativeLayout
+					 * 最上面添加了一个1dip高的黑色色块
+					 */
+				} else {
+					switchTab(1, true);
+					setPointEffect(0);
+				}
+			}
+		});
+
+		postContent = (EditText) view.findViewById(R.id.reply_content);
+		clearContentBtn = (ImageButton) view.findViewById(R.id.clearContent);
+		postContent.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+				String str = postContent.getText().toString().trim();
+				int length = str.length();
+				if (length > 0) {
+					clearContentBtn.setVisibility(View.VISIBLE);
+					clearContentBtn.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							clearContentBtn.setVisibility(View.INVISIBLE);
+						}
+					}, 5000);
+				} else {
+					clearContentBtn.setVisibility(View.INVISIBLE);
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {}
+
+			@Override
+			public void afterTextChanged(final Editable s) {}
+		});
+		clearContentBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				postContent.setText("");
+			}
+		});
+
+		viewFlipper = (ViewFlipper) view.findViewById(R.id.faceFlipper);
+		photoFlipper = (ViewFlipper) view.findViewById(R.id.photoFlipper);
+		faceLayout = (LinearLayout) view.findViewById(R.id.faceLayout);
+		pagePoint = (LinearLayout) view.findViewById(R.id.pagePoint);
+		photoPagePoint = (LinearLayout) view.findViewById(R.id.photoPagePoint);
+		fillGapLinear = (LinearLayout) view.findViewById(R.id.fill_the_gap);
+		photoLayout = (LinearLayout) view.findViewById(R.id.ll_photo_flipper);
+		photoButtonsLayout = (LinearLayout) view.findViewById(R.id.ll_photo_buttons);
+		emotionLayout = (LinearLayout) view.findViewById(R.id.ll_emotion);
+		addGridView();
+		addPhotoGridView();
+		/**
+		 * mAbBottomBar.setVisibility(View.VISIBLE);
+		 * mAbBottomBar.setBottomView(view);
+		 **/
+	}
+
+	public void reply() {
+		String content = postContent.getText().toString().trim();
+		if (mActivity.replyParams.getUrlParams().get("lou") != "0") {
+			content = content.substring(content.indexOf(":") + 1);
+		}
+		mActivity.replyParams.put("atc_content", content);
+		PostApi.reply(mActivity, mActivity.replyParams, new AbStringHttpResponseListener() {
+			// 获取数据成功会调用这里
+			@Override
+			public void onSuccess(final int statusCode, final String content) {
+				Log.d(TAG, "onSuccess:" + content);
+				AbResult result = PostApi.parseReplyResponse(content);
+				if (result.getResultCode() == 0) {
+					mActivity.showToast("回复成功");
+				} else {
+					mActivity.showToast(result.getResultMsg());
+				}
+			}
+
+			// 开始执行前
+			@Override
+			public void onStart() {
+				Log.d(TAG, "onStart");
+				// 显示进度框
+				mActivity.showProgressDialog();
+			}
+
+			// 失败，调用
+			@Override
+			public void onFailure(final int statusCode, final String content, final Throwable error) {
+				mActivity.showToast("回复失败，请稍后再试");
+			}
+
+			// 完成后调用，失败，成功
+			@Override
+			public void onFinish() {
+				Log.d(TAG, "onFinish");
+				// 移除进度框
+				mActivity.removeProgressDialog();
+			}
+		});
+		postContent.setText("");
+	}
+
+	/**
+	 * 描述：因为调用了Camera和Gally所以要判断他们各自的返回情况, 他们启动时是这样的startActivityForResult
+	 */
+	@Override
+	public void onActivityResult(final int requestCode, final int resultCode, final Intent mIntent) {
+		super.onActivityResult(requestCode, resultCode, mIntent);
+		if (resultCode != mActivity.RESULT_OK) {
+			mActivity.showToast("没有选中图片");
+			return;
+		}
+		ArrayList<String> files = new ArrayList<String>();
+		switch (requestCode) {
+		case Constant.INTENTRESULT_ADD_PHOTO:
+			Bundle bundle = mIntent.getExtras();
+			String[] images = bundle.getStringArray(ShowImageActivity.KEY_INTENT_RESULT);
+			for (String path : images) {
+				String[] paths = path.split(Constant.PATH_SEPERATOR);
+				files.add(paths[0]);
+			}
+			upload(files);
+			break;
+		case Constant.INTENTRESULT_TAKE_PHOTO:
+			String[] projection = { MediaStore.MediaColumns._ID, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.Media.DATA };
+			Cursor c = mActivity.getContentResolver().query(fileUri, projection, null, null, null);
+			c.moveToFirst();
+			files.add(c.getString(c.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
+			upload(files);
+			break;
+		/**
+		 * case CAMERA_CROP_DATA: String path = mIntent.getStringExtra("PATH");
+		 * if (D) { Log.d(TAG, "裁剪后得到的图片的路径是 = " + path); }
+		 * mImagePathAdapter.addItem(mImagePathAdapter.getCount() - 1, path);
+		 * camIndex++; AbViewUtil.setAbsListViewHeight(mGridView, 3, 25); break;
+		 **/
+		}
+	}
+
+	/**
+	 * 设置游标（小点）的显示效果
+	 * 
+	 * @param darkPointNum
+	 */
+	private void setPointEffect(final int darkPointNum) {
+		for (int i = 0; i < pointList.size(); i++) {
+			pointList.get(i).setBackgroundResource(R.drawable.point_gray);
+		}
+		pointList.get(darkPointNum).setBackgroundResource(R.drawable.point_black);
+	}
+
+	private void setPhotoPointEffect(final int darkPointNum) {
+		for (int i = 0; i < photopointList.size(); i++) {
+			photopointList.get(i).setBackgroundResource(R.drawable.point_gray);
+		}
+		photopointList.get(darkPointNum).setBackgroundResource(R.drawable.point_black);
+
+	}
+
+	protected void addPhotoData() {
+		ArrayList<HashMap<String, Object>> list = null;
+		for (int i = 0; i < localImgs.size(); i++) {
+			if (i % PHOTO_PER_PAGE == 0) {
+				list = new ArrayList<HashMap<String, Object>>();
+				photolistGrid.add(list);
+			}
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("image", localImgs.get(i));
+			map.put("faceName", "");
+
+			/**
+			 * 这里把表情对应的名字也添加进数据对象中，便于在点击时获得表情对应的名称
+			 */
+			photolistGrid.get(i / PHOTO_PER_PAGE).add(map);
+		}
+	}
+
+	private void addFaceData() {
+		ArrayList<HashMap<String, Object>> list = null;
+		for (int i = 0; i < EmotionUtil.signs.length; i++) {
+			if (i % EMOTION_PER_PAGE == 0) {
+				list = new ArrayList<HashMap<String, Object>>();
+				listGrid.add(list);
+			}
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("image", EmotionUtil.getDefaultEmotions().get(EmotionUtil.signs[i]).filename);
+			map.put("faceName", EmotionUtil.signs[i]);
+
+			/**
+			 * 这里把表情对应的名字也添加进数据对象中，便于在点击时获得表情对应的名称
+			 */
+			listGrid.get(i / EMOTION_PER_PAGE).add(map);
+		}
+		System.out.println("listGrid size is " + listGrid.size());
+	}
+
+	/**
+	 * GridViewAdapter
+	 * 
+	 * @param textView
+	 * @param text
+	 */
+	class MyGridAdapter extends BaseAdapter {
+		Context context;
+		ArrayList<HashMap<String, Object>> list;
+		int layout;
+		String[] from;
+		int[] to;
+
+		public MyGridAdapter(final Context context, final ArrayList<HashMap<String, Object>> list, final int layout, final String[] from, final int[] to) {
+			super();
+			this.context = context;
+			this.list = list;
+			this.layout = layout;
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(final int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(final int position) {
+			return position;
+		}
+
+		class ViewHolder {
+			ImageView image = null;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, final ViewGroup parent) {
+			ViewHolder holder = null;
+			if (convertView == null) {
+				convertView = LayoutInflater.from(context).inflate(layout, null);
+				holder = new ViewHolder();
+				holder.image = (ImageView) convertView.findViewById(to[0]);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			holder.image.setImageBitmap(EmotionUtil.getEmotionBitmap(context, (String) list.get(position).get("faceName")));
+			class MyGridImageClickListener implements OnClickListener {
+				int position;
+
+				public MyGridImageClickListener(final int position) {
+					super();
+					this.position = position;
+				}
+
+				@Override
+				public void onClick(final View v) {
+					postContent.append((String) list.get(position).get("faceName"));
+				}
+			}
+			// 这里创建了一个方法内部类
+			holder.image.setOnClickListener(new MyGridImageClickListener(position));
+
+			return convertView;
+		}
+	}
+
+	/**
+	 * 用到的方法 viewFlipper.getDisplayedChild() 获得当前显示的ChildView的索引
+	 * 
+	 * @author Administrator
+	 */
+	class MyTouchListener implements OnTouchListener {
+		ViewFlipper viewFlipper = null;
+
+		public MyTouchListener(final ViewFlipper viewFlipper) {
+			super();
+			this.viewFlipper = viewFlipper;
+		}
+
+		@Override
+		public boolean onTouch(final View v, final MotionEvent event) {
+			// TODO Auto-generated method stub
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				startX = event.getX();
+				moveable = true;
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if (moveable) {
+					if (event.getX() - startX > 60) {
+						moveable = false;
+						int childIndex = viewFlipper.getDisplayedChild();
+						/**
+						 * 这里的这个if检测是防止表情列表循环滑动
+						 */
+						if (childIndex > 0) {
+							viewFlipper.setInAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.left_in));
+							viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.right_out));
+							viewFlipper.showPrevious();
+							setPointEffect(childIndex - 1);
+						}
+					} else if (event.getX() - startX < -60) {
+						moveable = false;
+						int childIndex = viewFlipper.getDisplayedChild();
+						/**
+						 * 这里的这个if检测是防止表情列表循环滑动
+						 */
+						if (childIndex < listGrid.size() - 1) {
+							viewFlipper.setInAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.right_in));
+							viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.left_out));
+							viewFlipper.showNext();
+							setPointEffect(childIndex + 1);
+						}
+					}
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				moveable = true;
+				break;
+			default:
+				break;
+			}
+			return false;
+		}
+	}
+
+	private void setPhotoLayoutExpandState(final boolean isexpand) {
+		if (isexpand == false) {
+			photoFlipper.setDisplayedChild(0);
+			ViewGroup.LayoutParams params = photoLayout.getLayoutParams();
+			params.height = 1;
+			photoLayout.setLayoutParams(params);
+			ViewGroup.LayoutParams params2 = photoButtonsLayout.getLayoutParams();
+			params2.height = 1;
+			photoButtonsLayout.setLayoutParams(params2);
+			/**
+			 * height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+			 * 再次打开ViewFlipper时画面在动的结果, 为了避免因为1dip的高度产生一个白缝，
+			 * 所以这里在ViewFlipper所在的RelativeLayout中ViewFlipper 上层添加了一个1dip高的黑色色块
+			 * viewFlipper必须在屏幕中有像素才能执行setDisplayedChild()操作
+			 */
+			// emotionBtn.setBackgroundResource(R.drawable.chat_bottom_look);
+			photoExpanded = false;
+		} else {
+			/**
+			 * 让软键盘消失
+			 */
+			((InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+			ViewGroup.LayoutParams params = photoLayout.getLayoutParams();
+			params.height = LayoutParams.WRAP_CONTENT;
+			photoLayout.setLayoutParams(params);
+			ViewGroup.LayoutParams params2 = photoButtonsLayout.getLayoutParams();
+			params2.height = LayoutParams.WRAP_CONTENT;
+			photoButtonsLayout.setLayoutParams(params2);
+			// emotionBtn.setBackgroundResource(R.drawable.chat_bottom_keyboard);
+			photoExpanded = true;
+		}
+	}
+
+	private void setFaceLayoutExpandState(final boolean isexpand) {
+		if (isexpand == false) {
+			viewFlipper.setDisplayedChild(0);
+			ViewGroup.LayoutParams params = faceLayout.getLayoutParams();
+			params.height = 1;
+			faceLayout.setLayoutParams(params);
+			/**
+			 * height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+			 * 再次打开ViewFlipper时画面在动的结果, 为了避免因为1dip的高度产生一个白缝，
+			 * 所以这里在ViewFlipper所在的RelativeLayout中ViewFlipper 上层添加了一个1dip高的黑色色块
+			 * viewFlipper必须在屏幕中有像素才能执行setDisplayedChild()操作
+			 */
+			// emotionBtn.setBackgroundResource(R.drawable.chat_bottom_look);
+			expanded = false;
+		} else {
+			/**
+			 * 让软键盘消失
+			 */
+			((InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+			ViewGroup.LayoutParams params = faceLayout.getLayoutParams();
+			params.height = LayoutParams.WRAP_CONTENT;
+			faceLayout.setLayoutParams(params);
+			// emotionBtn.setBackgroundResource(R.drawable.chat_bottom_keyboard);
+			expanded = true;
+		}
+	}
+
+	protected void showPhotoButtons(final boolean show) {
+		ViewGroup.LayoutParams params = photoLayout.getLayoutParams();
+		if (show) {
+			params.height = 1;
+		} else {
+			params.height = LayoutParams.WRAP_CONTENT;
+		}
+		photoLayout.setLayoutParams(params);
+	}
+
+	protected void addPhotoGridView() {
+		for (int i = 0; i < photolistGrid.size(); i++) {
+			View view = LayoutInflater.from(mActivity).inflate(R.layout.view_item_photo, null);
+			GridView gv = (GridView) view.findViewById(R.id.myGridView);
+			gv.setNumColumns(4);
+			gv.setSelector(new ColorDrawable(Color.TRANSPARENT));
+			MyGridAdapter adapter = new MyGridAdapter(mActivity, photolistGrid.get(i), R.layout.griditem_photo,
+					new String[] { "image" }, new int[] { R.id.photoGridImage });
+			gv.setAdapter(adapter);
+			gv.setOnTouchListener(new MyTouchListener(viewFlipper));
+			viewFlipper.addView(view);
+
+			/**
+			 * 这里不喜欢用Java代码设置Image的边框大小等，所以单独配置了一个Imageview的布局文件
+			 */
+			View pointView = LayoutInflater.from(mActivity).inflate(R.layout.point_image_layout, null);
+			ImageView image = (ImageView) pointView.findViewById(R.id.pointImageView);
+			// image.setBackgroundResource(R.drawable.qian_point);
+			photoPagePoint.addView(pointView);
+			/**
+			 * 这里验证了LinearLayout属于ViewGroup类型，可以采用addView 动态添加view
+			 */
+
+			photopointList.add(image);
+			/**
+			 * 将image放入pointList，便于修改点的颜色
+			 */
+		}
+	}
+
+	private void addGridView() {
+		for (int i = 0; i < listGrid.size(); i++) {
+			View view = LayoutInflater.from(mActivity).inflate(R.layout.view_item, null);
+			showPhotoButtons(false);
+			GridView gv = (GridView) view.findViewById(R.id.myGridView);
+			try {
+				// gv.setNumColumns(5);
+				gv.setSelector(new ColorDrawable(Color.TRANSPARENT));
+				MyGridAdapter adapter = new MyGridAdapter(mActivity, listGrid.get(i), R.layout.griditem_emotion,
+						new String[] { "image" }, new int[] { R.id.emotionGridImage });
+				gv.setAdapter(adapter);
+				gv.setOnTouchListener(new MyTouchListener(viewFlipper));
+				viewFlipper.addView(view);
+
+				/**
+				 * 这里不喜欢用Java代码设置Image的边框大小等，所以单独配置了一个Imageview的布局文件
+				 */
+				View pointView = LayoutInflater.from(mActivity).inflate(R.layout.point_image_layout, null);
+				ImageView image = (ImageView) pointView.findViewById(R.id.pointImageView);
+				// image.setBackgroundResource(R.drawable.qian_point);
+				pagePoint.addView(pointView);
+				/**
+				 * 这里验证了LinearLayout属于ViewGroup类型，可以采用addView 动态添加view
+				 */
+
+				pointList.add(image);
+				/**
+				 * 将image放入pointList，便于修改点的颜色
+				 */
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected void upload(final ArrayList<String> files) {
+		AbRequestParams params = new AbRequestParams();
+		params.put("fid", String.valueOf(threadInfo.fid));
+		uploadedFiles = 0;
+		for (int i = 0; i < files.size(); i++) {
+			final String filename = files.get(i);
+			File fileNew = null;
+			File file = new File(filename);
+			Bitmap bmp = null;
+			try {
+				Bitmap.CompressFormat compressFormat;
+				if (filename.endsWith(".png") || filename.endsWith(".PNG")) {
+					compressFormat = Bitmap.CompressFormat.PNG;
+				} else {
+					compressFormat = Bitmap.CompressFormat.JPEG;
+				}
+				bmp = AbFileUtil.getBitmapFromSD(file, AbImageUtil.SCALEIMG,
+						Constant.PHOTO_GENERAL_WIDTH,
+						Constant.PHOTO_GENERAL_HEIGHT);
+				String filenameNew = filename.substring(0, filename.lastIndexOf(".")) + AbDateUtil.getCurrentDate("yyyyMMddHHmmss") + filename.substring(filename.lastIndexOf("."));
+				byte[] bmpBytes = AbImageUtil.bitmap2Bytes(bmp, compressFormat, true);
+				AbFileUtil.writeByteArrayToSD(filenameNew, bmpBytes, true);
+				fileNew = new File(filenameNew);
+				params.put("upload", fileNew, "multipart/form-data");
+				tmpFileList.add(fileNew);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+			}
+			PostApi.upload(mActivity, params, new AbStringHttpResponseListener() {
+				@Override
+				public void onSuccess(final int statusCode, final String content) {
+					Log.d(TAG, "onSuccess:" + content);
+					UploadInfo info = PostApi.parseUploadResponse(content);
+					if (info != null && info.getResultCode() == 0) {
+						imgUrls.add(info.path);
+						localImgs.add(filename);
+					}
+				}
+
+				// 开始执行前
+				@Override
+				public void onStart() {
+					mActivity.showToast("开始上传图片...");
+				}
+
+				@Override
+				public void onFailure(final int statusCode, final String content, final Throwable error) {
+					mActivity.showToast(error.getMessage());
+				}
+
+				// 进度
+				@Override
+				public void onProgress(final int bytesWritten, final int totalSize) {}
+
+				// 完成后调用，失败，成功，都要调用
+				@Override
+				public void onFinish() {
+					Log.d(TAG, "onFinish");
+					uploadedFiles++;
+					if (uploadedFiles == files.size()) {
+						mActivity.showToast("图片上传完成");
+						for (int i = 0; i < tmpFileList.size(); i++) {
+							tmpFileList.get(i).delete();
+						}
+					}
+					/**
+					 * if (mGridview.getVisibility() != View.VISIBLE) {
+					 * mGridview.setVisibility(View.VISIBLE); }
+					 **/
+					adapter.notifyDataSetChanged();
+				};
+			});
+		}
+	}
+
+	protected void getThreadDetail() {
+		AbRequestParams params = new AbRequestParams();
+		params.put("page", String.valueOf(pageIndex));
+		params.put("pageSize", String.valueOf(pageSize));
+		params.put("tid", String.valueOf(threadInfo.tid));
+		params.put("isubb", String.valueOf(1));
+		ForumApi.readThread(getActivity(), params, new AbStringHttpResponseListener() {
+			// 获取数据成功会调用这里
+			@Override
+			public void onSuccess(final int statusCode, final String content) {
+				Log.d(TAG, "onSuccess:" + content);
+				threadDetailsNew = ForumApi.parseReadThreadResponse(content);
+			}
+
+			// 开始执行前
+			@Override
+			public void onStart() {
+				Log.d(TAG, "onStart");
+				// 显示进度框
+				mActivity.showProgressDialog();
+			}
+
+			// 失败，调用
+			@Override
+			public void onFailure(final int statusCode, final String content, final Throwable error) {
+				mActivity.showToast("加载失败，请稍后再试");
+			}
+
+			// 完成后调用，失败，成功
+			@Override
+			public void onFinish() {
+				Log.d(TAG, "onFinish");
+				// 移除进度框
+				mActivity.removeProgressDialog();
+				if (threadDetailsNew.detailList.size() > 0 && threadDetailsNew.pageTotal >= pageIndex) {
+					if (prevCount == threadDetails.pageSize) {
+						threadDetails.detailList.addAll(threadDetailsNew.detailList);
+					} else {
+						// 上次整页条数没取满
+						int count = threadDetailsNew.detailList.size() - prevCount;
+						if (count > 0) {
+							threadDetails.detailList.addAll(threadDetailsNew.detailList.subList(count, threadDetailsNew.detailList.size() - 1));
+						}
+					}
+					threadDetails.pageTotal = threadDetailsNew.pageTotal;
+					threadDetails.pageIndex = threadDetailsNew.pageIndex;
+					threadDetails.pageSize = threadDetailsNew.pageSize;
+					threadDetails.totalCount = threadDetailsNew.totalCount;
+					prevCount = threadDetailsNew.detailList.size();
+					if (threadDetailsNew.detailList.size() == threadDetailsNew.pageSize) {
+						pageIndex++;
+					}
+					threadDetailsNew.detailList.clear();
+					mAbPullToRefreshView.onFooterLoadFinish();
+					myListViewAdapter.notifyDataSetChanged();
+				} else {
+					Log.d(TAG, "exceed totol page");
+				}
+			}
+		});
+	}
+
+	protected void switchTab(final int tabType, final boolean isexpand) {
+		if (tabType == 0) {
+			if (isexpand) {
+				setPhotoLayoutExpandState(true);
+				setFaceLayoutExpandState(false);
+			} else {
+				setPhotoLayoutExpandState(false);
+			}
+		} else {
+			if (isexpand) {
+				setPhotoLayoutExpandState(false);
+				setFaceLayoutExpandState(true);
+			} else {
+				setFaceLayoutExpandState(false);
+			}
+		}
+	}
+}

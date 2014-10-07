@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:background="@color/white"
+	android:orientation="vertical"
+	android:padding="5dip" >
+	<com.ab.view.pullview.AbPullToRefreshView
+		android:id="@+id/mPullRefreshView"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:background="@color/white"
+		android:orientation="vertical" >
+		<ListView
+			android:id="@+id/mListView"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:cacheColorHint="#00000000"
+			android:divider="@drawable/list_divider"
+			android:dividerHeight="1dip" />
+	</com.ab.view.pullview.AbPullToRefreshView>
+	<LinearLayout
+		android:id="@+id/faceLayout"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:layout_alignParentBottom="true"
+		android:orientation="horizontal" >
+		<LinearLayout
+			android:id="@+id/ll_reply_photo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal" >
+			<Button
+				android:id="@+id/reply_addphoto"
+				android:layout_width="60dip"
+				android:layout_height="60dip"
+				android:layout_margin="5dip"
+				android:background="@drawable/huifu_xiangce" />
+			<Button
+				android:id="@+id/reply_takephoto"
+				android:layout_width="60dip"
+				android:layout_height="60dip"
+				android:layout_margin="5dip"
+				android:background="@drawable/huifu_xiangji" />
+			<ViewFlipper
+				android:id="@+id/photoFlipper"
+				android:layout_width="fill_parent"
+				android:layout_height="140dip"
+				android:background="@color/white" >
+			</ViewFlipper>
+			<LinearLayout
+				android:id="@+id/photo_the_gap"
+				android:layout_width="fill_parent"
+				android:layout_height="1dip"
+				android:background="@color/white"
+				android:orientation="horizontal" >
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/photoPagePoint"
+				android:layout_width="fill_parent"
+				android:layout_height="20dip"
+				android:background="@color/white"
+				android:gravity="center"
+				android:orientation="horizontal" >
+			</LinearLayout>
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/ll_emotion"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal" >
+			<ViewFlipper
+				android:id="@+id/faceFlipper"
+				android:layout_width="fill_parent"
+				android:layout_height="140dip"
+				android:background="@color/white" >
+			</ViewFlipper>
+			<LinearLayout
+				android:id="@+id/fill_the_gap"
+				android:layout_width="fill_parent"
+				android:layout_height="1dip"
+				android:background="@color/white"
+				android:orientation="horizontal" >
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/pagePoint"
+				android:layout_width="fill_parent"
+				android:layout_height="20dip"
+				android:background="@color/white"
+				android:gravity="center"
+				android:orientation="horizontal" >
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/faceLayout"
+		android:background="@color/gray_bg"
+		android:baselineAligned="false"
+		android:descendantFocusability="beforeDescendants"
+		android:focusableInTouchMode="true"
+		android:gravity="center"
+		android:orientation="horizontal" >
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="horizontal" >
+			<Button
+				android:id="@+id/reply_openphoto"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:background="@drawable/reply_addphoto"
+				android:scaleType="fitCenter" />
+		</LinearLayout>
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dip"
+			android:gravity="center"
+			android:orientation="horizontal" >
+			<Button
+				android:id="@+id/reply_emotion"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:background="@drawable/emotion"
+				android:scaleType="fitCenter" />
+		</LinearLayout>
+		<RelativeLayout
+			android:id="@+id/rl_content"
+			android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dip"
+			android:layout_marginTop="3dip"
+			android:layout_weight="1"
+			android:gravity="center" >
+			<EditText
+				android:id="@+id/reply_content"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:hint="@string/hint_reply"
+				android:inputType="text"
+				android:singleLine="true"
+				android:textColor="@color/gray_black"
+				android:textSize="14sp" />
+			<ImageButton
+				android:id="@+id/clearContent"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:layout_marginRight="5dip"
+				android:background="@drawable/clear_icon"
+				android:visibility="invisible" />
+		</RelativeLayout>
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dip"
+			android:layout_marginRight="5dip"
+			android:gravity="center"
+			android:orientation="horizontal" >
+			<Button
+				android:id="@+id/reply_send"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:background="@android:color/transparent"
+				android:scaleType="fitCenter"
+				android:text="@string/reply_send"
+				android:textColor="@color/green"
+				android:textSize="14sp" />
+		</LinearLayout>
+	</LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/photoLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/ll_photo_buttons"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/reply_addphoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            android:background="@drawable/huifu_xiangce" />
+
+        <Button
+            android:id="@+id/reply_takephoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dip"
+            android:background="@drawable/huifu_xiangji" />
+    </LinearLayout>
+
+    <ViewFlipper
+        android:id="@+id/faceFlipper"
+        android:layout_width="fill_parent"
+        android:layout_height="60dip"
+        android:layout_below="@id/ll_photo_buttons"
+        android:visibility="gone"
+        android:background="@color/white" >
+    </ViewFlipper>
+    <net.cstong.android.ui.widget.ScrollGridView
+					android:id="@+id/gridPhoto"
+					android:layout_below="@id/ll_photo_buttons"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:cacheColorHint="@android:color/transparent"
+					android:columnWidth="70dip"
+					android:gravity="center"
+					android:horizontalSpacing="5dip"
+					android:listSelector="@android:color/transparent"
+					android:numColumns="auto_fit"
+					android:stretchMode="columnWidth"
+					android:verticalSpacing="5dip" />
+
+    <LinearLayout
+        android:id="@+id/fill_the_gap"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@id/faceFlipper"
+        android:background="@color/white"
+        android:orientation="horizontal" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pagePoint"
+        android:layout_width="fill_parent"
+        android:layout_height="20dip"
+        android:layout_below="@id/fill_the_gap"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal" >
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal" >
+
+	<Button
+		android:id="@+id/btnCancel"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal|center_vertical"
+		android:layout_marginRight="20dip"
+		android:textColor="@color/white"
+		android:textSize="16sp"
+		android:background="@color/android:transparent"
+		android:text="@string/cancel" />
+
+</LinearLayout>

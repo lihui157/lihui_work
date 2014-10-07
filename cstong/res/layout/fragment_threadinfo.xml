@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/itemsImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="5dip"
+            android:paddingBottom="2dip" />
+
+        <net.cstong.android.ui.widget.CircularImageView
+            android:id="@+id/itemsAvatar"
+            android:layout_width="36dip"
+            android:layout_height="36dip"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="5dip"
+            android:paddingBottom="2dip"
+            android:scaleType="fitXY" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/itemsUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_toRightOf="@id/itemsImage"
+        android:gravity="left"
+        android:paddingLeft="10dip"
+        android:paddingTop="5dip"
+        android:textColor="@color/green"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/itemsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/itemsUsername"
+        android:layout_toRightOf="@id/itemsImage"
+        android:gravity="left"
+        android:paddingBottom="2dip"
+        android:paddingLeft="10dip"
+        android:textColor="@color/gray_black"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_thumbs"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/itemsTitle"
+        android:layout_toRightOf="@id/itemsImage"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/rl_thumb0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ProgressBar
+                android:id="@+id/progressBar0"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="5dip"
+                android:paddingBottom="2dip" />
+
+            <com.ab.view.sample.AbScaleImageView
+                android:id="@+id/iv_thumb0"
+                android:layout_width="80dip"
+                android:layout_height="80dip"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dip"
+                android:background="#333333"
+                android:scaleType="fitXY" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_thumb1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="5dip"
+                android:paddingBottom="2dip" />
+
+            <com.ab.view.sample.AbScaleImageView
+                android:id="@+id/iv_thumb1"
+                android:layout_width="80dip"
+                android:layout_height="80dip"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dip"
+                android:background="#333333" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_thumb2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="5dip"
+                android:paddingBottom="2dip" />
+
+            <com.ab.view.sample.AbScaleImageView
+                android:id="@+id/iv_thumb2"
+                android:layout_width="80dip"
+                android:layout_height="80dip"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dip"
+                android:background="#333333" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/itemsCreatedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_thumbs"
+        android:layout_gravity="left"
+        android:layout_toRightOf="@id/itemsImage"
+        android:gravity="left"
+        android:paddingBottom="2dip"
+        android:paddingLeft="10dip"
+        android:textColor="@color/orange"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/itemsViews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/ll_thumbs"
+        android:layout_toRightOf="@id/itemsCreatedTime"
+        android:gravity="right"
+        android:paddingBottom="2dip"
+        android:paddingRight="10dip"
+        android:textColor="@color/gray_black"
+        android:textSize="14sp" />
+
+</RelativeLayout>

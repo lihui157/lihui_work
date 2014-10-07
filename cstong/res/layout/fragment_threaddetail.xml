@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/fragment_threaddetail"
+	android:layout_width="fill_parent"
+	android:background="@android:color/transparent"
+	android:layout_height ="match_parent" >
+
+	<RelativeLayout
+		android:id="@+id/threadAuthorImage"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<ProgressBar
+			android:id="@+id/progressBar"
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_marginLeft="5dip"
+			android:layout_marginTop="5dip"
+			android:paddingBottom="2dip" />
+
+		<net.cstong.android.ui.widget.CircularImageView
+			android:id="@+id/threadAuthorAvatar"
+			android:layout_width="36dip"
+			android:layout_height="36dip"
+			android:layout_alignParentLeft="true"
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="5dip"
+			android:layout_marginTop="5dip"
+			android:paddingBottom="2dip"
+			android:scaleType="fitXY" />
+	</RelativeLayout>
+
+	<TextView
+		android:id="@+id/threadAuthorName"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingTop="10dip"
+		android:paddingBottom="15dip"
+		android:textColor="@color/green"
+		android:textSize="16sp" />
+
+	<TextView
+		android:id="@+id/threadQuoteReplyAuthor"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadAuthorName"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:paddingTop="5dip"
+		android:layout_marginLeft="10dip"
+		android:visibility="invisible"
+		android:lineSpacingMultiplier="1.2"
+		android:textColor="@color/green"
+		android:background="@color/quote_background"
+		android:textSize="16sp" />
+	
+	<TextView
+		android:id="@+id/threadQuoteReplyContent"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadQuoteReplyAuthor"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:paddingTop="5dip"
+		android:layout_marginLeft="10dip"
+		android:lineSpacingMultiplier="1.2"
+		android:visibility="gone"
+		android:textColor="@color/black"
+		android:background="@color/quote_background"
+		android:textSize="16sp" />
+	<WebView
+		android:id="@+id/wvThreadQuoteReplyContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadQuoteReplyAuthor"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:paddingTop="5dip"
+		
+		android:lineSpacingMultiplier="1.2"
+		android:textColor="@color/black"
+		android:textSize="16sp" />
+	
+	<TextView
+		android:id="@+id/threadContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadQuoteReplyContent"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:paddingTop="5dip"
+		android:visibility="gone"
+		android:lineSpacingMultiplier="1.2"
+		android:textColor="@color/black"
+		android:textSize="16sp" />
+	 <net.cstong.android.ui.widget.TouchWebView
+		android:id="@+id/wvThreadContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/wvThreadQuoteReplyContent"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:paddingTop="5dip"
+		android:lineSpacingMultiplier="1.2"
+		android:textColor="@color/black"
+		android:textSize="16sp" /> 
+
+	<TextView
+		android:id="@+id/threadCreatedTime"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/wvThreadContent"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingBottom="2dip"
+		android:paddingLeft="10dip"
+		android:textColor="@color/gray_text"
+		android:textSize="14sp" />
+
+</RelativeLayout>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="match_parent"
+	android:background="#ffffff" >
+
+	<TextView
+		android:id="@+id/threadTitle"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingLeft="10dip"
+		android:paddingTop="5dip"
+		android:textColor="@color/black"
+		android:textSize="18sp" />
+
+	<RelativeLayout
+		android:id="@+id/threadAuthorImage"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadTitle" >
+
+		<ProgressBar
+			android:id="@+id/progressBar"
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_marginLeft="5dip"
+			android:layout_marginTop="5dip"
+			android:paddingBottom="2dip" />
+
+		<net.cstong.android.ui.widget.CircularImageView
+			android:id="@+id/threadAuthorAvatar"
+			android:layout_width="36dip"
+			android:layout_height="36dip"
+			android:layout_alignParentLeft="true"
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="5dip"
+			android:layout_marginTop="5dip"
+			android:paddingBottom="2dip"
+			android:scaleType="fitXY" />
+	</RelativeLayout>
+
+	<TextView
+		android:id="@+id/threadAuthorName"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadTitle"
+		android:layout_gravity="center_vertical"
+		android:layout_toRightOf="@id/threadAuthorImage"
+		android:paddingLeft="10dip"
+		android:paddingTop="10dip"
+		android:textColor="@color/green"
+		android:textSize="16sp" />
+
+	<TextView
+		android:id="@+id/threadCreatedTime"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_below="@id/threadTitle"
+		android:layout_gravity="center_vertical"
+		android:paddingRight="10dip"
+		android:paddingTop="11dip"
+		android:textColor="@color/orange"
+		android:textSize="14sp" />
+
+	<TextView
+		android:id="@+id/threadContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadAuthorImage"
+		android:lineSpacingMultiplier="1.2"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:visibility="gone"
+		android:paddingTop="5dip"
+		android:textColor="@color/black"
+		android:textSize="16sp" />
+	<net.cstong.android.ui.widget.TouchWebView
+		android:id="@+id/wvThreadContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/threadAuthorImage"
+		android:lineSpacingMultiplier="1.2"
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		
+		android:paddingTop="5dip"
+		android:textColor="@color/black"
+		android:textSize="16sp" />
+
+</RelativeLayout>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/faceLayout"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:background="@color/white"
+	android:orientation="horizontal"
+	android:padding="5dip" >
+	<com.ab.view.sliding.AbSlidingTabView
+		android:id="@+id/photoTabs"
+		android:layout_width="fill_parent"
+		android:layout_height="120dip" />
+	<RelativeLayout
+		android:id="@+id/rl_content"
+		android:layout_width="0dip"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="5dip"
+		android:layout_marginTop="3dip"
+		android:layout_weight="1"
+		android:gravity="center" >
+		<EditText
+			android:id="@+id/reply_content"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:hint="@string/hint_reply"
+			android:inputType="text"
+			android:singleLine="true"
+			android:textColor="@color/gray_black"
+			android:textSize="16sp" />
+		<ImageButton
+			android:id="@+id/clearContent"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="5dip"
+			android:background="@drawable/clear_icon"
+			android:visibility="invisible" />
+	</RelativeLayout>
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="5dip"
+		android:layout_marginRight="5dip"
+		android:gravity="center"
+		android:orientation="horizontal" >
+		<Button
+			android:id="@+id/reply_send"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:scaleType="fitCenter"
+			android:text="@string/reply_send"
+			android:textColor="@color/green"
+			android:textSize="18sp" />
+	</LinearLayout>
+</LinearLayout>

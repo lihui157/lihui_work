@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/framelayout"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:descendantFocusability="blocksDescendants" >
+
+	<net.cstong.android.ui.photo.MyImageView
+		android:id="@+id/iv_photo"
+		android:layout_width="fill_parent"
+		android:layout_height="70dip"
+		android:background="@drawable/image_loading"
+		android:scaleType="centerCrop" />
+
+</FrameLayout>

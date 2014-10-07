@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/messageItemImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="5dip"
+            android:paddingBottom="2dip"/>
+
+        <net.cstong.android.ui.widget.CircularImageView
+            android:id="@+id/messageItemAvatar"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="5dip"
+            android:paddingBottom="2dip"
+            android:scaleType="fitXY" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/messageItemUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:gravity="left"
+        android:layout_toRightOf="@id/messageItemImage"
+        android:paddingLeft="10dip"
+        android:paddingTop="5dip"
+        android:textColor="@color/green"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/messageItemCreatedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/messageItemUsername"
+        android:gravity="right"
+        android:paddingTop="5dip"
+        android:paddingRight="10dip"
+        android:textColor="@color/gray_text"
+        android:textSize="14sp" />
+    
+    <TextView
+        android:id="@+id/messageItemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/messageItemUsername"
+        android:layout_toRightOf="@id/messageItemImage"
+        android:gravity="left"
+        android:paddingBottom="2dip"
+        android:paddingLeft="10dip"
+        android:textColor="@color/gray_black"
+        android:textSize="16sp" />    
+</RelativeLayout>

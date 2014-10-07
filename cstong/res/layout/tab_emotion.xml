@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/faceLayout"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/white"
+	android:orientation="vertical" >
+	<ViewFlipper
+		android:id="@+id/faceFlipper"
+		android:layout_width="fill_parent"
+		android:layout_height="140dip"
+		android:background="@color/white" >
+	</ViewFlipper>
+	<LinearLayout
+		android:id="@+id/fill_the_gap"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:layout_below="@id/faceFlipper"
+		android:background="@color/white"
+		android:orientation="horizontal" >
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/pagePoint"
+		android:layout_width="fill_parent"
+		android:layout_height="20dip"
+		android:layout_below="@id/fill_the_gap"
+		android:background="@color/white"
+		android:gravity="center"
+		android:orientation="horizontal" >
+	</LinearLayout>
+</RelativeLayout>
