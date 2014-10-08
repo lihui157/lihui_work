@@ -7,6 +7,8 @@ import net.cstong.android.util.Constant;
 import net.cstong.android.util.Utils;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -37,6 +39,16 @@ public class RegisterActivity extends AbActivity {
 	private ImageButton mClear3;
 	private ImageButton mClear4;
 	private boolean registerSuccess = false;
+	
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+		}
+		
+	};
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -90,7 +102,7 @@ public class RegisterActivity extends AbActivity {
 				int length = str.length();
 				if (length > 0) {
 					mClear1.setVisibility(View.VISIBLE);
-					if (!AbStrUtil.isNumberLetter(str)) {
+					if (!(AbStrUtil.isNumberLetter(str)||AbStrUtil.isContainChinese(str))) {
 						str = str.substring(0, length - 1);
 						userName.setText(str);
 						String str1 = userName.getText().toString().trim();
@@ -357,7 +369,7 @@ public class RegisterActivity extends AbActivity {
 				return;
 			}
 
-			if (!AbStrUtil.isNumberLetter(mStr_name)) {
+			if (!(AbStrUtil.isNumberLetter(mStr_name)||AbStrUtil.isContainChinese(mStr_name))) {
 				showToast(R.string.error_name_expr);
 				userName.setFocusable(true);
 				userName.requestFocus();
@@ -371,7 +383,7 @@ public class RegisterActivity extends AbActivity {
 				return;
 			}
 
-			if (AbStrUtil.strLength(mStr_name) > 20) {
+			if (AbStrUtil.strLength(mStr_name) > 15) {
 				showToast(R.string.error_name_length2);
 				userName.setFocusable(true);
 				userName.requestFocus();
@@ -440,7 +452,15 @@ public class RegisterActivity extends AbActivity {
 			Constant.myApp.mUser.password = mStr_pwd;
 			Constant.myApp.mUser.email = mStr_email;
 			Constant.myApp.mUser.mobile = mStr_mobile;
-			register();
+			handler.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					register();
+				}
+			});
+			
 		}
 	}
 
@@ -465,6 +485,7 @@ public class RegisterActivity extends AbActivity {
 		View loginView = mInflater.inflate(R.layout.btn_register, null);
 		getTitleBar().addRightView(loginView);
 		Button btnLogin = (Button) loginView.findViewById(R.id.btnRegister);
+		btnLogin.setText(R.string.login);
 		btnLogin.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {

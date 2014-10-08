@@ -106,7 +106,7 @@
 			android:orientation="horizontal" >
 			<Button
 				android:id="@+id/reply_send"
-				android:layout_width="wrap_content"
+				android:layout_width="150dp"
 				android:layout_height="wrap_content"
 				android:background="@android:color/transparent"
 				android:scaleType="fitCenter"

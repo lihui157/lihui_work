@@ -79,6 +79,7 @@ public class ThreadReadFragment extends Fragment {
 
 	protected LinearLayout photoLayout;
 	protected LinearLayout emotionLayout;
+	private boolean sending = false;
 	
 	private Handler handler = new Handler(){
 
@@ -886,6 +887,12 @@ public class ThreadReadFragment extends Fragment {
 			mActivity.showToast("请先登录");
 			return;
 		}
+		
+		if(sending){
+			Log.w(TAG, "sending is true");
+			return;
+		}
+		
 		String content = postContent.getText().toString().trim();
 //		String content = "";
 		if (replyPrefix != null&&content.length()>replyPrefix.length()) {
@@ -895,7 +902,7 @@ public class ThreadReadFragment extends Fragment {
 			content += "[img]" + photoFragment.imgUrls.get(i) + "[/img]";
 		}
 //		content += postContent.getText().toString().trim();
-		mActivity.replyParams.put("atc_content",  EncodingUtils.getString(content.getBytes(), "UTF-8"));
+		mActivity.replyParams.put("atc_content",  content);
 		
 		handler.post(new Runnable() {
 			
@@ -921,6 +928,9 @@ public class ThreadReadFragment extends Fragment {
 					@Override
 					public void onStart() {
 						Log.d(TAG, "onStart");
+						sending = true;
+						sendBtn.setText("发送中");
+						sendBtn.setEnabled(false);
 						// 显示进度框
 						mActivity.showProgressDialog();
 					}
@@ -940,7 +950,9 @@ public class ThreadReadFragment extends Fragment {
 						imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 						// 移除进度框
 						mActivity.removeProgressDialog();
-						
+						sending = false;
+						sendBtn.setText(R.string.reply_send);
+						sendBtn.setEnabled(true);
 						getThreadDetailByReply();
 					}
 				});

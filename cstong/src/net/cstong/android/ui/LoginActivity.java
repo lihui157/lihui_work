@@ -337,6 +337,7 @@ public class LoginActivity extends AbActivity {
 		View loginView = mInflater.inflate(R.layout.btn_register, null);
 		getTitleBar().addRightView(loginView);
 		Button btnRegister = (Button) loginView.findViewById(R.id.btnRegister);
+		btnRegister.setText(R.string.register);
 		btnRegister.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {

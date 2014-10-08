@@ -25,8 +25,8 @@
 	<string name="user_email">邮箱</string>
 	<string name="error_name">请输入用户名！</string>
 	<string name="error_name_length1">用户名长度不能少于3个字符</string>
-	<string name="error_name_length2">用户名长度不能超过20个字符</string>
-	<string name="error_name_expr">用户名只能是字母和数字</string>
+	<string name="error_name_length2">用户名长度不能超过15个字符</string>
+	<string name="error_name_expr">用户名只能是字母、数字、中文</string>
 	<string name="error_pwd">请输入密码！</string>
 	<string name="error_pwd_match">两次密码输入不一致！</string>
 	<string name="error_pwd_length1">密码长度不能少于6个字符</string>
@@ -70,7 +70,7 @@
 	<string name="chat">私信</string>
 	<string name="hint_reply">写点什么</string>
 	<string name="hint_post_title">标题(必填)</string>
-	<string name="reply_send">发送</string>
+	<string name="reply_send">发  送</string>
 	<string name="post_title">发表主题</string>
 	<string name="post_publish">发布</string>
 	<string name="photo_select">选择照片</string>
