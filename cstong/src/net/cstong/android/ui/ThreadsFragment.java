@@ -131,12 +131,14 @@ public class ThreadsFragment extends Fragment {
 			public void onStart() {
 				Log.d(TAG, "onStart");
 				//显示进度框
+				if (forumInfo.fid != 0)
 				mActivity.showProgressDialog();
 			}
 
 			// 失败，调用
 			@Override
 			public void onFailure(final int statusCode, final String content, final Throwable error) {
+				if (forumInfo.fid != 0)
 				mActivity.showToast("加载失败，请稍后再试");
 			}
 
@@ -144,8 +146,7 @@ public class ThreadsFragment extends Fragment {
 			@Override
 			public void onFinish() {
 				Log.d(TAG, "onFinish");
-				//移除进度框
-				mActivity.removeProgressDialog();
+				
 				if (threadsNew.size() > 0) {
 					threads.addAll(threadsNew);
 					myListViewAdapter.notifyDataSetChanged();
@@ -154,6 +155,8 @@ public class ThreadsFragment extends Fragment {
 				}
 
 				mAbPullToRefreshView.onFooterLoadFinish();
+				//移除进度框
+				mActivity.removeProgressDialog();
 			}
 		};
 		return view;

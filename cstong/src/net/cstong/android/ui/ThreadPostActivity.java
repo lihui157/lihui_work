@@ -409,6 +409,7 @@ public class ThreadPostActivity extends AbActivity {
 		postParams.put("fid", String.valueOf(fid));
 		if (selectedTopicId == -1 && fid != 209) {
 			sending = false;
+			publishBtn.setEnabled(true);
 			showToast("请选择主题分类");
 			return;
 		}
@@ -418,6 +419,7 @@ public class ThreadPostActivity extends AbActivity {
 		String title = postTitle.getText().toString().trim();
 		if (title.length() == 0) {
 			sending = false;
+			publishBtn.setEnabled(true);
 			showToast("发帖主题不能为空");
 			return;
 		}
@@ -428,6 +430,7 @@ public class ThreadPostActivity extends AbActivity {
 		}
 		if (content.length() == 0) {
 			sending = false;
+			publishBtn.setEnabled(true);
 			showToast("发帖内容不能为空");
 			return;
 		}
@@ -458,6 +461,7 @@ public class ThreadPostActivity extends AbActivity {
 					public void onStart() {
 						Log.d(TAG, "onStart");
 						sending = true;
+						publishBtn.setEnabled(false);
 						
 						// 显示进度框
 						ThreadPostActivity.this.showProgressDialog();
@@ -488,6 +492,7 @@ public class ThreadPostActivity extends AbActivity {
 							ThreadPostActivity.this.finish();
 						}
 						sending = false;
+						publishBtn.setEnabled(true);
 					}
 				});
 				
