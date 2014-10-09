@@ -75,7 +75,6 @@ public class AsynHtmlContentLoader {
         // 使用最大可用内存值的1/8作为缓存的大小。 
         int cacheSize = maxMemory / 8; 
         caches = new LruCache<String, Spanned>(cacheSize) { 
-            @SuppressLint("NewApi")
 			@Override
             protected int sizeOf(String key, Spanned spanned) { 
                 // 重写此方法来衡量每张图片的大小，默认返回图片数量。 

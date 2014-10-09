@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.util.LruCache;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -70,10 +71,15 @@ public class MyApplication extends Application {
         caches = new LruCache<String, Bitmap>(cacheSize) { 
             @SuppressLint("NewApi")
 			@Override
-            protected int sizeOf(String key, Bitmap bitmap) { 
-                // 重写此方法来衡量每张图片的大小，默认返回图片数量。 
-                return bitmap.getByteCount() / 1024; 
-            } 
+			protected int sizeOf(String key, Bitmap bitmap) {
+				// 重写此方法来衡量每张图片的大小，默认返回图片数量。
+				// return bitmap.getByteCount() / 1024;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+					return bitmap.getByteCount() / 1024;
+				}
+				// Pre HC-MR1
+				return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
+			} 
         };
 	}
 

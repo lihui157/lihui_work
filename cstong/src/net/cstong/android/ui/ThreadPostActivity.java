@@ -781,6 +781,11 @@ public class ThreadPostActivity extends AbActivity {
 	 * @return 分类id
 	 */
 	protected int getDefaultTopicType() {
-		return topicTypeList.typeList.get(topicTypeList.typeList.size() - 1).topicId;
+		if(topicTypeList.typeList.size()>0){
+			return topicTypeList.typeList.get(topicTypeList.typeList.size() - 1).topicId;
+		}else{
+			return -1;
+		}
+		
 	}
 }

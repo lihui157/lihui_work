@@ -138,7 +138,9 @@ public class ThreadsFragment extends Fragment {
 			// 失败，调用
 			@Override
 			public void onFailure(final int statusCode, final String content, final Throwable error) {
-				if (forumInfo.fid != 0)
+				if (forumInfo.fid != 0){
+					getThreadList();
+				}
 				mActivity.showToast("加载失败，请稍后再试");
 			}
 
