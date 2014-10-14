@@ -3,6 +3,9 @@ package net.cstong.android.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import net.cstong.android.R;
 import net.cstong.android.api.FocusApi;
 import net.cstong.android.api.ForumApi;
@@ -17,13 +20,18 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.ab.http.AbRequestParams;
 import com.ab.http.AbStringHttpResponseListener;
+import com.ab.util.dct.IFDCT;
 import com.ab.view.pullview.AbPullToRefreshView;
 import com.ab.view.pullview.AbPullToRefreshView.OnFooterLoadListener;
 import com.ab.view.pullview.AbPullToRefreshView.OnHeaderRefreshListener;
@@ -35,6 +43,8 @@ public class ThreadsFragment extends Fragment {
 	private ListView mListView = null;
 	private ThreadItemAdapter myListViewAdapter = null;
 	private ForumInfo forumInfo = null;
+	private Button btRefresh;
+	private TextView tvMsg;
 
 	private AbStringHttpResponseListener threadsListener = null;
 	private List<ThreadInfo> threads = new ArrayList<ThreadInfo>();
@@ -122,6 +132,20 @@ public class ThreadsFragment extends Fragment {
 					threadsNew = FocusApi.parseFocusResponse(content);
 				} else {
 					threadsNew = ForumApi.parseThreadListResponse(content);
+					try {
+						JSONObject object = new JSONObject(content);
+						if(object!=null&&!object.isNull("result")&&object.getInt("result")!=1){
+							threadsNew = ForumApi.parseThreadListResponse(content);
+							tvMsg.setVisibility(View.GONE);
+						}else{
+							tvMsg.setVisibility(View.VISIBLE);
+							tvMsg.setText(object.getString("message"));
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
 				pageIndex++;
 			}
@@ -130,17 +154,21 @@ public class ThreadsFragment extends Fragment {
 			@Override
 			public void onStart() {
 				Log.d(TAG, "onStart");
-				//显示进度框
-				if (forumInfo.fid != 0)
-				mActivity.showProgressDialog();
+				//显示进度框 
+//				if (forumInfo.fid != 0){
+					mActivity.showProgressDialog();
+					btRefresh.setVisibility(View.GONE);
+					tvMsg.setVisibility(View.GONE);
+//				}
+				
 			}
 
 			// 失败，调用
 			@Override
 			public void onFailure(final int statusCode, final String content, final Throwable error) {
-				if (forumInfo.fid != 0){
-					getThreadList();
-				}
+//				if (forumInfo.fid != 0){
+//					getThreadList();
+//				}
 				mActivity.showToast("加载失败，请稍后再试");
 			}
 
@@ -159,9 +187,36 @@ public class ThreadsFragment extends Fragment {
 				mAbPullToRefreshView.onFooterLoadFinish();
 				//移除进度框
 				mActivity.removeProgressDialog();
+				
+				setRefreshButtonVisibility();
+				
+				
 			}
 		};
+		
+		btRefresh = (Button) view.findViewById(R.id.bt_refresh);
+		btRefresh.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				getThreadList();
+				
+			}
+		});
+		tvMsg = (TextView) view.findViewById(R.id.tv_msg);
+		
+		setRefreshButtonVisibility();
+		
 		return view;
+	}
+	
+	private void setRefreshButtonVisibility(){
+		if(threads==null||threads.size()==0){
+			btRefresh.setVisibility(View.VISIBLE);
+		}else{
+			btRefresh.setVisibility(View.GONE);
+		}
 	}
 
 	@Override

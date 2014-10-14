@@ -81,5 +81,6 @@
 	<string name="cancel">取消</string>
 	<string name="ok">确定</string>
 	<string name="publish">发贴</string>
+	<string name="refresh">无数据，按此刷新</string>
 
 </resources>

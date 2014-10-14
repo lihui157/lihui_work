@@ -444,7 +444,7 @@ public class MyHttpClient {
 			//取得HttpResponse
 
 			String response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
-//			Log.i(TAG, "request：" + url + ",result：" + response);
+			Log.i(TAG, "request：" + url + ",result：" + response);
 
 		} catch (Exception e) {
 			e.printStackTrace();
