@@ -519,6 +519,10 @@ public class ThreadReadFragment extends Fragment {
 					@Override
 					public void onFailure(final int statusCode, final String content, final Throwable error) {
 						mActivity.showToast("加载失败，请稍后再试");
+						if(pageIndex==1){
+							mActivity.finish();
+						}
+						
 					}
 
 					// 完成后调用，失败，成功
@@ -953,6 +957,9 @@ public class ThreadReadFragment extends Fragment {
 						sending = false;
 						sendBtn.setText(R.string.reply_send);
 						sendBtn.setEnabled(true);
+						mActivity.replyParams.remove("lou");
+						mActivity.replyParams.remove("pid");
+						mActivity.replyParams.remove("_getHtml");
 						getThreadDetailByReply();
 					}
 				});
