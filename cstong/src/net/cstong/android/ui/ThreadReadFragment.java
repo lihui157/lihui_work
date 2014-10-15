@@ -900,7 +900,7 @@ public class ThreadReadFragment extends Fragment {
 		
 		String content = postContent.getText().toString().trim();
 //		content = Utils.chinaToUnicode(content);
-//		String content = "%e7%88%b1%e6%96%af%e5%9f%ba%e6%91%a9%e6%b1%bc%e6%b1%bc";
+//		String content = "&#x7231;&#x65AF;&#x57FA;&#x6469;&#x6C7C;&#x6C7C;";
 		if (replyPrefix != null&&content.length()>replyPrefix.length()) {
 			content = content.substring(replyPrefix.length());
 		}
