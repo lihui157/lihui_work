@@ -13,6 +13,7 @@ import net.cstong.android.api.ForumApi.ThreadInfo;
 import net.cstong.android.api.PostApi;
 import net.cstong.android.ui.adapter.ThreadDetailAdapter;
 import net.cstong.android.util.Constant;
+import net.cstong.android.util.Utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -898,7 +899,8 @@ public class ThreadReadFragment extends Fragment {
 		}
 		
 		String content = postContent.getText().toString().trim();
-//		String content = "";
+//		content = Utils.chinaToUnicode(content);
+//		String content = "%e7%88%b1%e6%96%af%e5%9f%ba%e6%91%a9%e6%b1%bc%e6%b1%bc";
 		if (replyPrefix != null&&content.length()>replyPrefix.length()) {
 			content = content.substring(replyPrefix.length());
 		}
