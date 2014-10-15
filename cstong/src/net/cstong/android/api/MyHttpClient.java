@@ -43,9 +43,11 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -57,6 +59,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
@@ -279,6 +282,15 @@ public class MyHttpClient {
 				Log.d(TAG, "ssl 异常 不重试");
 				return false;
 			}
+			if(exception instanceof NoHttpResponseException){
+				Log.d(TAG, "NoHttpResponseException 重试");
+                return true;
+            } 
+			if (exception instanceof ClientProtocolException){
+				Log.d(TAG, "ClientProtocolException 重试");
+                return true;
+            } 
+
 //			if(exception instanceof TimeoutException){
 //				// 如果服务器丢掉了连接，那么就重试
 //				Log.d(TAG, "连接超时，重试");
@@ -457,25 +469,27 @@ public class MyHttpClient {
 		} catch (Exception e) {
 			Log.e(TAG, "--"+e.getMessage());
 			e.printStackTrace();
-			if(e instanceof TimeoutException||e instanceof ClientProtocolException){
+			if(e instanceof ConnectTimeoutException||e instanceof ClientProtocolException){
 				String response;
 				try {
 					response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
 					Log.i(TAG, "request2：" + url + ",result：" + response);
 				}catch (Exception e1) {
-					Log.e(TAG, "--"+e.getMessage());
+					Log.e(TAG, "--"+e1.getMessage());
 					e1.printStackTrace();
-					if(e instanceof TimeoutException||e instanceof ClientProtocolException){
+					if(e1 instanceof ConnectTimeoutException||e1 instanceof ClientProtocolException){
 						try {
 							response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
 							Log.i(TAG, "request3：" + url + ",result：" + response);
 						}catch (IOException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
+							//发送失败消息
+							responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e2.getMessage(), new AbAppException(e2));
 						}
 					}else{
 						//发送失败消息
-						responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e.getMessage(), new AbAppException(e));
+						responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e1.getMessage(), new AbAppException(e1));
 					}
 				}
 				
@@ -730,6 +744,7 @@ public class MyHttpClient {
 		BasicHttpParams httpParams = new BasicHttpParams();
 
 		// 设置每个路由最大连接数
+//		httpParams.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, false);
 		ConnPerRouteBean connPerRoute = new ConnPerRouteBean(30);
 		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, connPerRoute);
 		HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
@@ -738,13 +753,14 @@ public class MyHttpClient {
 		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS));
 		ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
 		// 读响应数据的超时时间
-		HttpConnectionParams.setSoTimeout(httpParams, timeout);
-		HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+		HttpConnectionParams.setSoTimeout(httpParams, 60000);
+		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
 		HttpConnectionParams.setTcpNoDelay(httpParams, true);
 		HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
 
 		HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setUserAgent(httpParams, userAgent);
+		HttpProtocolParams.setUseExpectContinue(httpParams, false);
 		//默认参数
 		HttpClientParams.setRedirecting(httpParams, false);
 		HttpClientParams.setCookiePolicy(httpParams, CookiePolicy.BROWSER_COMPATIBILITY);

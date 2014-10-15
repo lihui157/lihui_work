@@ -364,6 +364,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 //						Constant.PHOTO_GENERAL_WIDTH,
 //						Constant.PHOTO_GENERAL_HEIGHT);
 				bmp = FileUtil.getbitmap(file, Constant.PHOTO_GENERAL_WIDTH, Constant.PHOTO_GENERAL_HEIGHT);
+				bmp = ImageUtil.compressImage(bmp,compressFormat,50);
 				String filenameNew = filename.substring(0, filename.lastIndexOf(".")) + AbDateUtil.getCurrentDate("yyyyMMddHHmmss") + filename.substring(filename.lastIndexOf("."));
 				byte[] bmpBytes = AbImageUtil.bitmap2Bytes(bmp, compressFormat, true);
 				AbFileUtil.writeByteArrayToSD(filenameNew, bmpBytes, true);
@@ -390,6 +391,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 				// 开始执行前
 				@Override
 				public void onStart() {
+					mActivity.showProgressDialog();
 					mActivity.showToast("开始上传图片...");
 					
 				}
@@ -397,7 +399,8 @@ public class ThreadReadPhotoFragment extends Fragment {
 				@Override
 				public void onFailure(final int statusCode, final String content, final Throwable error) {
 					
-					mActivity.showToast(error.getMessage());
+//					mActivity.showToast(error.getMessage());
+					mActivity.showToast("图片上传失败，请重试");
 				}
 
 				// 进度
@@ -410,6 +413,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 					Log.d(TAG, "onFinish"); 
 					uploadedFiles++; 
 					if (uploadedFiles == files.size()) {
+						mActivity.removeProgressDialog();
 						mActivity.showToast("图片上传完成");
 						for (int i = 0; i < tmpFileList.size(); i++) {
 							tmpFileList.get(i).delete();
@@ -423,6 +427,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 					if (mGridview.getVisibility() != View.VISIBLE) {
 						mGridview.setVisibility(View.VISIBLE);
 					}
+					
 					adapter.notifyDataSetChanged();
 				};
 			});

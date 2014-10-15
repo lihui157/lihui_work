@@ -18,6 +18,7 @@ import net.cstong.android.ui.widget.ScrollGridView;
 import net.cstong.android.util.Constant;
 import net.cstong.android.util.EmotionUtil;
 import net.cstong.android.util.FileUtil;
+import net.cstong.android.util.ImageUtil;
 import net.cstong.android.util.Utils;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
@@ -342,6 +343,7 @@ public class ThreadPostActivity extends AbActivity {
 				}
 //				bmp = AbFileUtil.getBitmapFromSD(file, AbImageUtil.SCALEIMG,Constant.PHOTO_GENERAL_WIDTH,Constant.PHOTO_GENERAL_HEIGHT);
 				bmp = FileUtil.getbitmap(file, Constant.PHOTO_GENERAL_WIDTH, Constant.PHOTO_GENERAL_HEIGHT);
+				bmp = ImageUtil.compressImage(bmp,compressFormat,50);
 				String filenameNew = filename.substring(0, filename.lastIndexOf(".")) + AbDateUtil.getCurrentDate("yyyyMMddHHmmss") + filename.substring(filename.lastIndexOf("."));
 				byte[] bmpBytes = AbImageUtil.bitmap2Bytes(bmp, compressFormat, true);
 				AbFileUtil.writeByteArrayToSD(filenameNew, bmpBytes, true);
@@ -371,7 +373,8 @@ public class ThreadPostActivity extends AbActivity {
 
 				@Override
 				public void onFailure(final int statusCode, final String content, final Throwable error) {
-					showToast(error.getMessage());
+//					showToast(error.getMessage());
+					showToast("图片上传失败，请重试");
 				}
 
 				// 进度
