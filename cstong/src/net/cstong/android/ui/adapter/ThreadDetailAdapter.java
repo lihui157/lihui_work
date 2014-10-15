@@ -29,7 +29,9 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebSettings.LayoutAlgorithm;
+import android.webkit.WebSettings.ZoomDensity;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -180,6 +182,7 @@ public class ThreadDetailAdapter extends BaseAdapter {
 		return 2;
 	}
 
+	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	public void handleBlockquote( final ViewHolder holder,  final String content) {
 		
@@ -219,10 +222,20 @@ public class ThreadDetailAdapter extends BaseAdapter {
 //				.replace("<img", "<br/><img")
 				;
 		Log.i(TAG, "newContent-format:"+newContent);
+		final String temp = newContent;
 //		String head = "<style>window,html,body{overflow-x:hidden !important;-webkit-overflow-scrolling: touch !important;overflow: scroll !important;}</style>";
 //		holder.wvThreadContent.getSettings().setBuiltInZoomControls(true);
 		holder.wvThreadContent.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-		holder.wvThreadContent.loadDataWithBaseURL(null, newContent, "text/html", "utf-8", null);
+//		holder.wvThreadContent.loadDataWithBaseURL(null, temp, "text/html", "utf-8", null);
+		handler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				holder.wvThreadContent.loadDataWithBaseURL(null, temp, "text/html", "utf-8", null);
+				
+			}
+		}, 300);
+		
 		
 		
 	}

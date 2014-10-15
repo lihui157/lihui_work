@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -63,6 +64,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import android.R.integer;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -277,6 +279,11 @@ public class MyHttpClient {
 				Log.d(TAG, "ssl 异常 不重试");
 				return false;
 			}
+//			if(exception instanceof TimeoutException){
+//				// 如果服务器丢掉了连接，那么就重试
+//				Log.d(TAG, "连接超时，重试");
+//				return true;
+//			}
 			HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
 			boolean idempotent = (request instanceof HttpEntityEnclosingRequest);
 			if (!idempotent) {
@@ -416,43 +423,74 @@ public class MyHttpClient {
 	 * @param responseListener the response listener
 	 */
 	public void doPost(final String url, final AbRequestParams params, final AbHttpResponseListener responseListener) {
+		
+		responseListener.sendStartMessage();
+
+		if (!debug && !AbAppUtil.isNetworkAvailable(mContext)) {
+			responseListener.sendFailureMessage(AbConstant.CONNECT_FAILURE_CODE, AbConstant.CONNECTEXCEPTION, new AbAppException(AbConstant.CONNECTEXCEPTION));
+			return;
+		}
+
+		//HttpPost连接对象  
+		HttpPost httpRequest = new HttpPost(url);
+		httpRequest.addHeader(USER_AGENT, userAgent);
+		//压缩
+		httpRequest.addHeader(ACCEPT_ENCODING, "gzip");
+		if (Constant.myApp.mUser.cookie.length() > 0) {
+			httpRequest.addHeader(COOKIE, Constant.myApp.mUser.cookie);
+		}
+		//取得默认的HttpClient
+		HttpClient httpClient = getHttpClient();
 		try {
-			responseListener.sendStartMessage();
-
-			if (!debug && !AbAppUtil.isNetworkAvailable(mContext)) {
-				responseListener.sendFailureMessage(AbConstant.CONNECT_FAILURE_CODE, AbConstant.CONNECTEXCEPTION, new AbAppException(AbConstant.CONNECTEXCEPTION));
-				return;
-			}
-
-			//HttpPost连接对象  
-			HttpPost httpRequest = new HttpPost(url);
-			httpRequest.addHeader(USER_AGENT, userAgent);
-			//压缩
-			httpRequest.addHeader(ACCEPT_ENCODING, "gzip");
-			if (Constant.myApp.mUser.cookie.length() > 0) {
-				httpRequest.addHeader(COOKIE, Constant.myApp.mUser.cookie);
-			}
 			if (params != null) {
 				//使用NameValuePair来保存要传递的Post参数设置字符集 
 				HttpEntity httpentity = params.getEntity(responseListener);
 				//请求httpRequest  
 				httpRequest.setEntity(httpentity);
 			}
-
-			//取得默认的HttpClient
-			HttpClient httpClient = getHttpClient();
+			
 			//取得HttpResponse
 
 			String response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
 			Log.i(TAG, "request：" + url + ",result：" + response);
 
 		} catch (Exception e) {
+			Log.e(TAG, "--"+e.getMessage());
 			e.printStackTrace();
-			//发送失败消息
-			responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e.getMessage(), new AbAppException(e));
-		} finally {
+			if(e instanceof TimeoutException||e instanceof ClientProtocolException){
+				String response;
+				try {
+					response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
+					Log.i(TAG, "request2：" + url + ",result：" + response);
+				}catch (Exception e1) {
+					Log.e(TAG, "--"+e.getMessage());
+					e1.printStackTrace();
+					if(e instanceof TimeoutException||e instanceof ClientProtocolException){
+						try {
+							response = httpClient.execute(httpRequest, new RedirectionResponseHandler(url, responseListener), mHttpContext);
+							Log.i(TAG, "request3：" + url + ",result：" + response);
+						}catch (IOException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}else{
+						//发送失败消息
+						responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e.getMessage(), new AbAppException(e));
+					}
+				}
+				
+			}else{
+				//发送失败消息
+				responseListener.sendFailureMessage(AbConstant.UNTREATED_CODE, e.getMessage(), new AbAppException(e));
+			}
+			
+			
+		} 
+		finally {
 			responseListener.sendFinishMessage();
 		}
+		return;
+		
 	}
 
 	/**
