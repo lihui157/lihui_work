@@ -33,6 +33,7 @@ public class ApiHelper {
 	public static String URL_POST_GETPOSTVAR = "http://bbs.cstong.net/index.php?m=mobile&c=post&a=getPostVar";
 	public static String URL_POST_POST = "http://bbs.cstong.net/index.php?m=mobile&c=post&a=post";
 	public static String URL_POST_REPLY = "http://bbs.cstong.net/index.php?m=mobile&c=post&a=doreply";
+//	public static String URL_POST_REPLY = "http://192.168.1.54:8080/index_.jsp?m=mobile&c=post&a=doreply";
 	public static String URL_POST_UPLOAD = "http://bbs.cstong.net/index.php?m=mobile&c=post&a=upload";
 
 	public static void post(final Context context, final String url, final AbStringHttpResponseListener responseListener) {

@@ -744,19 +744,19 @@ public class MyHttpClient {
 		BasicHttpParams httpParams = new BasicHttpParams();
 
 		// 设置每个路由最大连接数
-//		httpParams.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, false);
-		ConnPerRouteBean connPerRoute = new ConnPerRouteBean(30);
-		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, connPerRoute);
-		HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
-		// 从连接池中取连接的超时时间，设置为1秒
-		ConnManagerParams.setTimeout(httpParams, timeout);
-		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS));
-		ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
+		httpParams.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, false);
+//		ConnPerRouteBean connPerRoute = new ConnPerRouteBean(30);
+//		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, connPerRoute);
+//		HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
+//		// 从连接池中取连接的超时时间，设置为1秒
+//		ConnManagerParams.setTimeout(httpParams, timeout);
+//		ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS));
+//		ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
 		// 读响应数据的超时时间
-		HttpConnectionParams.setSoTimeout(httpParams, 60000);
-		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
-		HttpConnectionParams.setTcpNoDelay(httpParams, true);
-		HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
+//		HttpConnectionParams.setSoTimeout(httpParams, 60000);
+//		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
+//		HttpConnectionParams.setTcpNoDelay(httpParams, true);
+//		HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);
 
 		HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setUserAgent(httpParams, userAgent);
