@@ -97,30 +97,24 @@ public class ShowImageActivity extends AbActivity {
 		btnComplete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View arg0) {
-				btnComplete.post(new Runnable() {
-					
-					@Override
-					public void run() {
-						// 开始上传
-						final List<String> selectedImages = adapter.getSelectItems();
-						if (selectedImages.size() > Constant.PHOTO_UPLOAD_LIMIT) {
-							showToast("一次只能上传" + Constant.PHOTO_UPLOAD_LIMIT + "张图片");
-							return;
-						}
 
-						Intent intent = null;
-						if (forumInfo == null) {
-							intent = new Intent(ShowImageActivity.this, ThreadReadActivity.class);
-						} else {
-							intent = new Intent(ShowImageActivity.this, ThreadPostActivity.class);
-						}
-						String[] imageUrls = new String[selectedImages.size()];
-						intent.putExtra(KEY_INTENT_RESULT, selectedImages.toArray(imageUrls));
-						setResult(RESULT_OK, intent);
-						ShowImageActivity.this.finish();
-						
-					}
-				});
+				// 开始上传
+				
+				final List<String> selectedImages = adapter.getSelectItems();
+				if (selectedImages.size() > Constant.PHOTO_UPLOAD_LIMIT) {
+					showToast("一次只能上传" + Constant.PHOTO_UPLOAD_LIMIT + "张图片");
+					return;
+				}
+				Intent intent = null;
+				if (forumInfo == null) {
+					intent = new Intent(ShowImageActivity.this, ThreadReadActivity.class);
+				} else {
+					intent = new Intent(ShowImageActivity.this, ThreadPostActivity.class);
+				}
+				String[] imageUrls = new String[selectedImages.size()];
+				intent.putExtra(KEY_INTENT_RESULT, selectedImages.toArray(imageUrls));
+				setResult(RESULT_OK, intent);
+				ShowImageActivity.this.finish();
 				
 			}
 		});

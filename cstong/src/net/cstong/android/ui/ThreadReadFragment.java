@@ -799,8 +799,8 @@ public class ThreadReadFragment extends Fragment {
 						if (currentTab == -1 || currentTab != TAB_EMOTION) {
 							toggleFragment(TAB_EMOTION, true);
 							emotionExpanded = true;
-							InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-							imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//							InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+//							imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 						} else {
 							if (emotionExpanded) {
 								toggleFragment(TAB_EMOTION, false);
@@ -825,8 +825,8 @@ public class ThreadReadFragment extends Fragment {
 						if (currentTab == -1 || currentTab != TAB_PHOTO) {
 							toggleFragment(TAB_PHOTO, true);
 							photoExpanded = true;
-							InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-							imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//							InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+//							imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 						} else {
 							if (photoExpanded) {
 								toggleFragment(TAB_PHOTO, false);

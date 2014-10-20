@@ -391,7 +391,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 				// 开始执行前
 				@Override
 				public void onStart() {
-					mActivity.showProgressDialog();
+//					mActivity.showProgressDialog();
 					mActivity.showToast("开始上传图片...");
 					
 				}
@@ -413,7 +413,7 @@ public class ThreadReadPhotoFragment extends Fragment {
 					Log.d(TAG, "onFinish"); 
 					uploadedFiles++; 
 					if (uploadedFiles == files.size()) {
-						mActivity.removeProgressDialog();
+//						mActivity.removeProgressDialog();
 						mActivity.showToast("图片上传完成");
 						for (int i = 0; i < tmpFileList.size(); i++) {
 							tmpFileList.get(i).delete();
@@ -558,21 +558,27 @@ public class ThreadReadPhotoFragment extends Fragment {
 		final ArrayList<String> files = new ArrayList<String>();
 		switch (requestCode) {
 		case Constant.INTENTRESULT_ADD_PHOTO:
-			Bundle bundle = mIntent.getExtras();
-			String[] images = bundle.getStringArray(ShowImageActivity.KEY_INTENT_RESULT);
-			for (String path : images) {
-				String[] paths = path.split(Constant.PATH_SEPERATOR);
-				files.add(paths[0]);
-			}
-			handler.post(new Runnable() {
-				
-				@Override
-				public void run() {
-					upload_(files);
-					
+			new Thread(){
+				public void run(){
+					Bundle bundle = mIntent.getExtras();
+					String[] images = bundle.getStringArray(ShowImageActivity.KEY_INTENT_RESULT);
+					for (String path : images) {
+						String[] paths = path.split(Constant.PATH_SEPERATOR);
+						files.add(paths[0]);
+					}
+					handler.post(new Runnable() {
+						
+						@Override
+						public void run() {
+							upload_(files);
+							
+						}
+					});
+					Log.d(TAG, "upload");
 				}
-			});
-			Log.d(TAG, "upload");
+			}.start();
+			
+			
 			break;
 		case Constant.INTENTRESULT_TAKE_PHOTO:
 			String[] projection = { MediaStore.MediaColumns._ID, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.Media.DATA };
