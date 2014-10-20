@@ -1,0 +1,43 @@
+@charset "utf-8";
+/* CSS Document */
+
+.path{font-size:18px;padding:10px 20px 10px 20px; }
+.menu{padding:10px 20px 10px 20px;}
+.menu a{ font-size:12px; font-weight:bold; color:#006699; text-decoration:none; }
+.logo{font-size:20px; padding:20px; font-weight:bold; float:left;}
+.desc{font-size:14px; padding: 20px; line-height: 25px;}
+.file_list{padding:20px;}
+.file_list table td{border:#FFFFFF 1px solid; width:150px;}
+
+
+body {
+    font-family:helvetica,tahoma,verdana,sans-serif;
+    padding:20px;
+    font-size:13px;
+    margin:0;
+}
+h2 {
+    font-size:18px;
+    font-weight:bold;
+    margin:0;
+    margin-bottom:15px;
+}
+.demo-info{
+	background:#FFFEE6;
+	color:#8F5700;
+	padding:12px;
+}
+.demo-tip{
+	width:16px;
+	height:16px;
+	margin-right:8px;
+	float:left;
+}
+
+form.a_form{
+border:1px dotted black;
+background:#FFFFDF;
+}
+.a_form ol, .a_form ul{
+list-style:none;
+}
