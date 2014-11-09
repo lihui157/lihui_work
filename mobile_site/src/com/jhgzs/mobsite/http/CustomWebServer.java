@@ -16,15 +16,15 @@ import android.os.Environment;
 
 import com.google.gson.Gson;
 import com.jhgzs.mobsite.ServerApplication;
-import com.jhgzs.mobsite.http.WFM_NanoHTTPD.Response;
-import com.jhgzs.mobsite.obj.WFM_DirInforObj;
-import com.jhgzs.mobsite.obj.WFM_FileItemObj;
-import com.jhgzs.mobsite.obj.WFM_Result;
+import com.jhgzs.mobsite.http.NanoHTTPD.Response;
+import com.jhgzs.mobsite.obj.DirInforObj;
+import com.jhgzs.mobsite.obj.FileItemObj;
+import com.jhgzs.mobsite.obj.Result;
 import com.jhgzs.mobsite.util.LogUtil;
-import com.jhgzs.mobsite.util.WFM_FileUtil;
-import com.jhgzs.mobsite.util.WFM_ZipCompressor;
+import com.jhgzs.mobsite.util.FileUtil;
+import com.jhgzs.mobsite.util.MyZipCompressor;
 
-public class WFM_CustomWebServer extends WFM_NanoHTTPD {
+public class CustomWebServer extends NanoHTTPD {
 
 	private static final String TAG = "CustomWebServer";
 	//url parms
@@ -39,9 +39,10 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 	public static final String ACTION_VALUE_DOWNLOADZIP = "downloadzip";
 	public static final String ACTION_VALUE_ISWRITABLE= "isWritable";  //是否可写
 	public static final String ACTION_VALUE_RENAME = "rename";   //重命名
+	public static final String ACTION_VALUE_DOWNLOADFILE = "downloadfile";
 	private Context context;
 	
-	public WFM_CustomWebServer(Context c,int port, File wwwroot) throws IOException {
+	public CustomWebServer(Context c,int port, File wwwroot) throws IOException {
 		super(port, wwwroot);
 		this.context = c;
 		LogUtil.info(TAG, "CustomWebServer", "start");
@@ -64,7 +65,7 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				//获取其他参数
 				String path = parms.getProperty(PARM_PATH,"");
 				//设置操作返回数据对象
-				WFM_Result result = new WFM_Result(WFM_Result.SUCCESS, "");
+				Result result = new Result(Result.SUCCESS, "");
 				result.setResultData(getDirInforObj(path));
 				//返回结果
 				return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(result));
@@ -74,7 +75,7 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				String path = parms.getProperty(PARM_PATH,"");
 				String folder = parms.getProperty(PARM_FILENAME, "");
 				if(folder.equals("")){
-					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "param fileName is ''")) );
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param fileName is ''")) );
 				}else{
 					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(createFolder(path,folder)) );
 				}
@@ -83,7 +84,7 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 			if(action.equals(ACTION_VALUE_DEL)){
 				String path = parms.getProperty(PARM_PATH,"");
 				if(path.equals("")){
-					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "param path is ''")) );
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param path is ''")) );
 				}else{
 					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(delete(path)) );
 				}
@@ -93,7 +94,7 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				String path = parms.getProperty(PARM_PATH,"");
 				String fileName = parms.getProperty(PARM_FILENAME, "");
 				if(fileName.equals("")){
-					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "param fileName is ''")) );
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param fileName is ''")) );
 				}else{
 					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(rename(path, fileName)) );
 				}
@@ -104,17 +105,17 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				String path = parms.getProperty(PARM_PATH,"");
 				String datafile = parms.getProperty("datafile","");
 				if(datafile.equals("")){
-					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "param datafile is ''")) );
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param datafile is ''")) );
 				}else{
 					try {
 //						boolean b = FileUtil.copyFile(files.getProperty("datafile", ""), Environment.getExternalStorageDirectory().getCanonicalPath()+path+"/"+datafile);
-						boolean b = WFM_FileUtil.copyFile(files.getProperty("datafile", ""), path+"/"+datafile);
+						boolean b = FileUtil.copyFile(files.getProperty("datafile", ""), path+"/"+datafile);
 						//删除缓存
-						WFM_FileUtil.deleteFile(files.getProperty("datafile", ""));
+						FileUtil.deleteFile(files.getProperty("datafile", ""));
 						if(b){
-							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.SUCCESS, "")) );
+							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.SUCCESS, "")) );
 						}else{
-							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "")) );
+							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "")) );
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -126,21 +127,21 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 			if(action.equals(ACTION_VALUE_DOWNLOADZIP)){
 				String path = parms.getProperty(PARM_PATH,"");
 				if("".equals(path)){
-					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "param path is ''")) );
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param path is ''")) );
 				}else{
 					String zipPath;
 					try {
 //						zipPath = Environment.getExternalStorageDirectory().getCanonicalPath()+path;
 						zipPath = path;
 						String zipFile = zipPath+".temp.zip";
-						WFM_ZipCompressor zipCompressor = new WFM_ZipCompressor(zipFile);
+						MyZipCompressor zipCompressor = new MyZipCompressor(zipFile);
 						boolean b = zipCompressor.compress(zipPath);
 						if(b){
-							WFM_Result result = new WFM_Result(WFM_Result.SUCCESS, "");
+							Result result = new Result(Result.SUCCESS, "");
 							result.setResultData(path+".temp.zip");
 							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(result) );
 						}else{
-							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new WFM_Result(WFM_Result.FAIL, "Compression failure")) );
+							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "Compression failure")) );
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -148,6 +149,26 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 					}
 					
 				}
+				
+			}
+			
+			if(action.equals(ACTION_VALUE_DOWNLOADFILE)){
+				String path = parms.getProperty(PARM_PATH,"");
+				if("".equals(path)){
+					return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "param path is ''")) );
+				}else{
+					try {
+						Response response = new Response(HTTP_OK, MIME_DEFAULT_BINARY, new FileInputStream(path));
+						response.addHeader("Content-Disposition", "attachment; filename="+FileUtil.getFileName(path));
+						return response ;
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Response(HTTP_NOTFOUND, MIME_HTML, "");
+					}
+					
+				}
+				
 			}
 			
 			
@@ -159,11 +180,11 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 	 * @param path
 	 * @return
 	 */
-	private WFM_DirInforObj getDirInforObj(String path){
+	private DirInforObj getDirInforObj(String path){
 		
-		WFM_DirInforObj dirInforObj = new WFM_DirInforObj();
+		DirInforObj dirInforObj = new DirInforObj();
 		File file = null;
-		ArrayList<WFM_FileItemObj> itemObjs = null;
+		ArrayList<FileItemObj> itemObjs = null;
 		//定位目录
 		try {
 			if (path == null || "".equals(path)
@@ -188,10 +209,10 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 		if(file.isDirectory()){
 			File[] list = file.listFiles();
 			if(list!=null&&list.length>0){
-				itemObjs = new ArrayList<WFM_FileItemObj>();
-				WFM_FileItemObj itemObj = null;
+				itemObjs = new ArrayList<FileItemObj>();
+				FileItemObj itemObj = null;
 				for(int i=0;i<list.length;i++){
-					itemObj = new WFM_FileItemObj();
+					itemObj = new FileItemObj();
 					itemObj.setFileName(list[i].getName());
 					try {
 //						itemObj.setUrl(list[i].getCanonicalPath().replace(Environment.getExternalStorageDirectory().getCanonicalPath(), ""));
@@ -223,8 +244,8 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 	 * @param path
 	 * @return
 	 */
-	private WFM_Result delete(String path) {
-		WFM_Result result = new WFM_Result();
+	private Result delete(String path) {
+		Result result = new Result();
 		try {
 //			String direct = Environment.getExternalStorageDirectory().getCanonicalPath()+path;
 			String direct = path;
@@ -232,29 +253,29 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 			File file = new File(direct);
 			if(file.exists()){
 				if(file.isDirectory()){
-					if(WFM_FileUtil.deleteDirectory(direct)){
-						result.setResultTag(WFM_Result.SUCCESS);
+					if(FileUtil.deleteDirectory(direct)){
+						result.setResultTag(Result.SUCCESS);
 						result.setResultMsg("");
 					}else{
-						result.setResultTag(WFM_Result.FAIL);
+						result.setResultTag(Result.FAIL);
 						result.setResultMsg("");
 					}
 				}else{
-					if(WFM_FileUtil.deleteFile(direct)){
-						result.setResultTag(WFM_Result.SUCCESS);
+					if(FileUtil.deleteFile(direct)){
+						result.setResultTag(Result.SUCCESS);
 						result.setResultMsg("");
 					}else{
-						result.setResultTag(WFM_Result.FAIL);
+						result.setResultTag(Result.FAIL);
 						result.setResultMsg("");
 					}
 				}
 			}else{
-				result.setResultTag(WFM_Result.FAIL);
+				result.setResultTag(Result.FAIL);
 				result.setResultMsg("no exist");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultTag(WFM_Result.FAIL);
+			result.setResultTag(Result.FAIL);
 			result.setResultMsg(e.getMessage());
 		}
 		return result;
@@ -263,8 +284,8 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 	/**
 	 * 重命名
 	 */
-	private WFM_Result rename(String path,String fileName){
-		WFM_Result result = new WFM_Result();
+	private Result rename(String path,String fileName){
+		Result result = new Result();
 		try {
 //			String oldFilePath = Environment.getExternalStorageDirectory().getCanonicalPath()+path;
 			String oldFilePath = path;
@@ -277,22 +298,22 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				LogUtil.debug(TAG, "rename", "newFile = "+newFile.getCanonicalPath());
 				boolean b = oldFile.renameTo(newFile);
 				if(b){
-					result.setResultTag(WFM_Result.SUCCESS);
+					result.setResultTag(Result.SUCCESS);
 					result.setResultMsg("");
 					result.setResultData(true);
 				}else{
-					result.setResultTag(WFM_Result.FAIL);
+					result.setResultTag(Result.FAIL);
 					result.setResultMsg("rename fail");
 					result.setResultData(false);
 				}
 			}else{
-				result.setResultTag(WFM_Result.FAIL);
+				result.setResultTag(Result.FAIL);
 				result.setResultMsg("no file");
 				result.setResultData(false);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			result.setResultTag(WFM_Result.FAIL);
+			result.setResultTag(Result.FAIL);
 			result.setResultMsg(e.getMessage());
 			result.setResultData(false);
 		}
@@ -301,8 +322,8 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 	}
 	
 	//创建文件夹
-	private WFM_Result createFolder(String dir,String folderName){
-		WFM_Result result = new WFM_Result();
+	private Result createFolder(String dir,String folderName){
+		Result result = new Result();
 		try {
 //			String direct = Environment.getExternalStorageDirectory().getCanonicalPath()+dir;
 			String direct = dir;
@@ -314,23 +335,23 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
 				if(!file.exists()){//文件夹不存在，可创建
 					file.mkdirs();
 					if(file.exists()){
-						result.setResultTag(WFM_Result.SUCCESS);
+						result.setResultTag(Result.SUCCESS);
 						result.setResultMsg("");
 						result.setResultData(true);
 					}else{
-						result.setResultTag(WFM_Result.FAIL);
+						result.setResultTag(Result.FAIL);
 						result.setResultMsg("");
 						result.setResultData(false);
 					}
 				}else{//文件夹存在，不可创建重复目录
-					result.setResultTag(WFM_Result.FAIL);
+					result.setResultTag(Result.FAIL);
 					result.setResultMsg("folder already exists");
 					result.setResultData(false);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultTag(WFM_Result.FAIL);
+			result.setResultTag(Result.FAIL);
 			result.setResultMsg(e.getMessage());
 			result.setResultData(false);
 		}
@@ -358,9 +379,15 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
         if ( res == null )
         {
                 // Remove URL arguments
+        	if(uri==null){
+        		uri = "/";
+        	}
                 uri = uri.trim().replace( File.separatorChar, '/' );
-                if ( uri.indexOf( '?' ) >= 0 )
-                        uri = uri.substring(0, uri.indexOf( '?' ));
+                if ( uri.indexOf( '?' ) >= 0 ){
+                	uri = uri.substring(0, uri.indexOf( '?' ));
+                	
+                }
+                        
 
                 // Prohibit getting out of current directory
                 if ( uri.startsWith( ".." ) || uri.endsWith( ".." ) || uri.indexOf( "../" ) >= 0 )
@@ -471,7 +498,7 @@ public class WFM_CustomWebServer extends WFM_NanoHTTPD {
                         int dot = f.getCanonicalPath().lastIndexOf( '.' );
                         if ( dot >= 0 )
                                 mime = (String)theMimeTypes.get( f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
-                        if ( mime == null )
+                        if ( mime == null)
                                 mime = MIME_DEFAULT_BINARY;
 
                         // Calculate etag

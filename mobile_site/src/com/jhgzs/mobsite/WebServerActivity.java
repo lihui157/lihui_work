@@ -14,9 +14,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import com.jhgzs.mobsite.http.WFM_CustomWebServer;
-import com.jhgzs.mobsite.http.WFM_NanoHTTPD;
-import com.jhgzs.mobsite.util.WFM_FileUtil;
+import com.jhgzs.mobsite.http.CustomWebServer;
+import com.jhgzs.mobsite.http.NanoHTTPD;
+import com.jhgzs.mobsite.util.FileUtil;
 
 
 
@@ -34,7 +34,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class WFM_WebServerActivity extends Activity {
+public class WebServerActivity extends Activity {
     
 	private TextView tvUrl,tvUrlDesc;
 	private Button btStartOrStop;
@@ -48,7 +48,7 @@ public class WFM_WebServerActivity extends Activity {
 		setContentView(R.layout.wfm_webserver_act);
 		try {
 			System.out.println(getBaseContext().getFilesDir().getCanonicalFile());
-			WFM_FileUtil.deleteDirectory(getBaseContext().getFilesDir().getCanonicalFile()+"/webroot/");
+			FileUtil.deleteDirectory(getBaseContext().getFilesDir().getCanonicalFile()+"/webroot/");
 //			FileUtil.copyDirectiory(Environment.getExternalStorageDirectory().getCanonicalPath()+"/webroot/", getBaseContext().getFilesDir().getCanonicalFile()+"/webroot/");
 			copyAssets("webroot", getBaseContext().getFilesDir().getCanonicalFile()+"/webroot/");
 			File file = getBaseContext().getFilesDir();

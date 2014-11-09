@@ -28,7 +28,7 @@ import java.io.FileOutputStream;
 import android.os.Environment;
 
 import com.jhgzs.mobsite.util.LogUtil;
-import com.jhgzs.mobsite.util.WFM_FileUtil;
+import com.jhgzs.mobsite.util.FileUtil;
 
 /**
  * A simple, tiny, nicely embeddable HTTP 1.0 (partially 1.1) server in Java
@@ -73,7 +73,7 @@ import com.jhgzs.mobsite.util.WFM_FileUtil;
  * See the end of the source file for distribution license
  * (Modified BSD licence)
  */
-public class WFM_NanoHTTPD
+public class NanoHTTPD
 {
         // ==================================================
         // API parts
@@ -223,7 +223,7 @@ public class WFM_NanoHTTPD
          * Starts a HTTP server to given port.<p>
          * Throws an IOException if the socket is already in use
          */
-        public WFM_NanoHTTPD( int port, File wwwroot ) throws IOException
+        public NanoHTTPD( int port, File wwwroot ) throws IOException
         {
                 myTcpPort = port;
                 this.myRootDir = wwwroot;
@@ -452,8 +452,8 @@ public class WFM_NanoHTTPD
                                 else{
                                 	sendResponse( r.status, r.mimeType, r.header, r.data );
                                 	//判断是否为临时压缩文件，如果是，则是用于下载文件夹时产生，需要在下载后删除
-                                	if(uri.endsWith(".temp.zip")){
-                                		WFM_FileUtil.deleteFile(uri);
+                                	if(uri!=null&&uri.endsWith(".temp.zip")){
+                                		FileUtil.deleteFile(uri);
                                 	}
                                 }
 

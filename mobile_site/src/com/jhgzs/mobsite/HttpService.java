@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.jhgzs.mobsite.http.WFM_CustomWebServer;
+import com.jhgzs.mobsite.http.CustomWebServer;
 
 import android.app.Service;
 import android.content.Intent;
@@ -72,7 +72,7 @@ public class HttpService extends Service {
 	private void startWebServer(){
 		try {
 			String rootPath = "/";
-			ServerApplication.setServer(new WFM_CustomWebServer(getApplication(),8080, new File(rootPath)));
+			ServerApplication.setServer(new CustomWebServer(getApplication(),8080, new File(rootPath)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

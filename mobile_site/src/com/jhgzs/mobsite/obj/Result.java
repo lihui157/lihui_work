@@ -5,14 +5,14 @@ package com.jhgzs.mobsite.obj;
  * @author lihui
  *
  */
-public class WFM_Result {
+public class Result {
 		
-		public WFM_Result(String resultTag,String resultMsg){
+		public Result(String resultTag,String resultMsg){
 			this.resultTag = resultTag;
 			this.resultMsg = resultMsg;
 		}
 		
-		public WFM_Result(){
+		public Result(){
 			
 		};
 		

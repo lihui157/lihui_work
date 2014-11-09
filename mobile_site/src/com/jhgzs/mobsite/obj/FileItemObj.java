@@ -5,7 +5,7 @@ package com.jhgzs.mobsite.obj;
  * @author lihui
  *
  */
-public class WFM_FileItemObj {
+public class FileItemObj {
 
 	private String fileName;
 	

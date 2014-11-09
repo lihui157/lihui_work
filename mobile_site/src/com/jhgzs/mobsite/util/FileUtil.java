@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import android.os.Environment;
 import android.util.Log;
 
-public class WFM_FileUtil {
+public class FileUtil {
 	private static final String TAG = "FileUtil";  
 //	 /**
 //	  * ªÒ»°Õº∆¨ª∫¥Ê

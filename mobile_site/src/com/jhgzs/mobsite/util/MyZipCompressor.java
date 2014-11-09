@@ -12,12 +12,12 @@ import java.util.zip.CheckedOutputStream;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 
-public class WFM_ZipCompressor {
+public class MyZipCompressor {
 	static final int BUFFER = 8192;
 
 	private File zipFile;
 
-	public WFM_ZipCompressor(String pathName) {
+	public MyZipCompressor(String pathName) {
 		zipFile = new File(pathName);
 	}
 
@@ -91,7 +91,7 @@ public class WFM_ZipCompressor {
 	}
 
 	public static void main(String[] args) {
-		WFM_ZipCompressor zc = new WFM_ZipCompressor("c:/telnetenable_8039.zip");
+		MyZipCompressor zc = new MyZipCompressor("c:/telnetenable_8039.zip");
 		zc.compress("c:/telnetenable_8039"); // 压缩一个文件夹
 
 	}

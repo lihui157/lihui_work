@@ -4,21 +4,21 @@ import java.io.IOException;
 
 import org.apache.tools.ant.taskdefs.Get;
 
-import com.jhgzs.mobsite.http.WFM_CustomWebServer;
+import com.jhgzs.mobsite.http.CustomWebServer;
 
 import android.app.Application;
 
 public class ServerApplication extends Application {
 
-	private static WFM_CustomWebServer server;
+	private static CustomWebServer server;
 	
 	public static final String http_root = "/webroot";
 
-	public static WFM_CustomWebServer getServer() {
+	public static CustomWebServer getServer() {
 		return server;
 	}
 
-	public static void setServer(WFM_CustomWebServer webServer) {
+	public static void setServer(CustomWebServer webServer) {
 		server = webServer;
 	}
 	

@@ -7,11 +7,11 @@ import java.util.List;
  * @author lihui
  *
  */
-public class WFM_DirInforObj {
+public class DirInforObj {
 	
 	private String currentPath;
 	
-	private List<WFM_FileItemObj> fileList;
+	private List<FileItemObj> fileList;
 
 	public String getCurrentPath() {
 		return currentPath;
@@ -21,11 +21,11 @@ public class WFM_DirInforObj {
 		this.currentPath = currentPath;
 	}
 
-	public List<WFM_FileItemObj> getFileList() {
+	public List<FileItemObj> getFileList() {
 		return fileList;
 	}
 
-	public void setFileList(List<WFM_FileItemObj> fileList) {
+	public void setFileList(List<FileItemObj> fileList) {
 		this.fileList = fileList;
 	}
 	

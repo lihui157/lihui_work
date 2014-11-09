@@ -191,29 +191,28 @@
 	        });
 	}
 	
-	//打包下载
+			//打包下载
 	function downloadFile(){
 		if(index==-1){
 			$.messager.alert('Message','请选择您要下载的文件');
 		}
 		var filePath = dataModel[index].url;
 		if(!dataModel[index].directory){
-			location.href = filePath;
+			location.href = "/?action=downloadfile&path="+encodeURIComponent(filePath);
 		}else{
 			var htmlobj=$.ajax({url:"/?action=downloadzip&path="+encodeURIComponent(filePath),async:false});
-		  	var result = eval("("+htmlobj.responseText+")");
+			var result = eval("("+htmlobj.responseText+")");
 			if(result.resultTag=="success"){
 				location.href = result.resultData;
 			}else{
 				$.messager.alert('Message','操作失败');
 			}
 		}
-		
+
 	}
-	
-	
-	
-	
+
+			
+
 </script>
 </head>
 <body>
