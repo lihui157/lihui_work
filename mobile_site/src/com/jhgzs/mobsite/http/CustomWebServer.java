@@ -137,9 +137,18 @@ public class CustomWebServer extends NanoHTTPD {
 						MyZipCompressor zipCompressor = new MyZipCompressor(zipFile);
 						boolean b = zipCompressor.compress(zipPath);
 						if(b){
-							Result result = new Result(Result.SUCCESS, "");
-							result.setResultData(path+".temp.zip");
-							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(result) );
+//							Result result = new Result(Result.SUCCESS, "");
+//							result.setResultData(path+".temp.zip");
+//							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(result) );
+							try {
+								Response response = new Response(HTTP_OK, MIME_DEFAULT_BINARY, new FileInputStream(zipFile));
+								response.addHeader("Content-Disposition", "attachment; filename="+FileUtil.getFileName(zipFile));
+								return response ;
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								return new Response(HTTP_NOTFOUND, MIME_HTML, "");
+							}
 						}else{
 							return new Response(HTTP_OK, MIME_HTML, new Gson().toJson(new Result(Result.FAIL, "Compression failure")) );
 						}
