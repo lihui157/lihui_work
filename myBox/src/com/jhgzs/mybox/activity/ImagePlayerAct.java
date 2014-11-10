@@ -5,8 +5,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.jhgzs.mybox.R;
-import com.jhgzs.mybox.view.ViewScroll;
-import com.jhgzs.mybox.view.TouchView.OnTouchCallBack;
+import com.jhgzs.mybox.activity.view.ViewScroll;
+import com.jhgzs.mybox.activity.view.TouchView.OnTouchCallBack;
 import com.jhgzs.utils.BoxUtil;
 
 import android.app.Activity;

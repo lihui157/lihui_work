@@ -22,6 +22,8 @@ import com.connectsdk.service.sessions.LaunchSession;
 import com.jhgzs.mybox.R;
 import com.jhgzs.mybox.activity.ImgListFragment.ImgListFragmentListener;
 import com.jhgzs.mybox.broadcast.MediaInfoChangeReceiver;
+import com.jhgzs.mybox.connect.BoxConnectableDeviceListener;
+import com.jhgzs.mybox.connect.BoxDiscoverManagerListener;
 import com.jhgzs.mybox.sys.Config;
 import com.jhgzs.mybox.sys.FileFilter;
 
@@ -46,7 +48,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
-		ImgListFragmentListener ,  DiscoveryManagerListener {
+		ImgListFragmentListener  {
 
 	private static final String TAG = "BoxMainFrameAct";
 	private ActionBar actionBar;
@@ -56,48 +58,18 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	private VideoListFragment videoListFragment;
 	
 	private DiscoveryManager mDiscoveryManager;
+	private BoxDiscoverManagerListener discoverManagerListener;
 	private ConnectableDevice mDevice;
 	LaunchSession mLaunchSession;
 	MediaControl mMediaControl;
-	private ConnectableDeviceListener connectableDeviceListener = new ConnectableDeviceListener() {
-		
-		@Override
-		public void onPairingRequired(ConnectableDevice device,
-				DeviceService service, PairingType pairingType) {
-			Log.i(TAG, "onPairingRequired:"+device.getFriendlyName()+"||"+service.getServiceName()+"||"+pairingType.name());
-			
-		}
-		
-		@Override
-		public void onDeviceReady(ConnectableDevice device) {
-			Log.i(TAG, "onDeviceReady:"+device.getFriendlyName());
-			test();
-		}
-		
-		@Override
-		public void onDeviceDisconnected(ConnectableDevice device) {
-			Log.i(TAG, "onDeviceDisconnected:"+device.getFriendlyName());
-			
-		}
-		
-		@Override
-		public void onConnectionFailed(ConnectableDevice device,
-				ServiceCommandError error) {
-			Log.e(TAG, "onConnectionFailed:"+device.getFriendlyName()+"||"+error.getMessage());
-			
-		}
-		
-		@Override
-		public void onCapabilityUpdated(ConnectableDevice device,
-				List<String> added, List<String> removed) {
-			Log.e(TAG, "onCapabilityUpdated:"+device.getFriendlyName());
-			
-		}
-	};
+	private BoxConnectableDeviceListener connectableDeviceListener;
 	private OnItemClickListener selectDevice = new AdapterView.OnItemClickListener() {
 	    @Override
 	    public void onItemClick(AdapterView adapter, View parent, int position, long id) {
 	        mDevice = (ConnectableDevice) adapter.getItemAtPosition(position);
+	        if(connectableDeviceListener==null){
+	        	connectableDeviceListener = new BoxConnectableDeviceListener();
+	        }
 	        mDevice.addListener(connectableDeviceListener);
 	        mDevice.connect();
 	    }
@@ -149,7 +121,8 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 		
 	    mDiscoveryManager = DiscoveryManager.getInstance();
 	    mDiscoveryManager.setCapabilityFilters(videoFilter, imageCapabilities,audioFilter);
-	    mDiscoveryManager.addListener(this);
+	    discoverManagerListener = new BoxDiscoverManagerListener();
+	    mDiscoveryManager.addListener(discoverManagerListener);
 	    mDiscoveryManager.start();
 	    
 	    showImage();
@@ -356,32 +329,7 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	    dialog.show();
 	}
 
-	@Override
-	public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-		Log.i(TAG, "onDeviceAdded = "+device.getFriendlyName());
-		
-	}
-
-	@Override
-	public void onDeviceUpdated(DiscoveryManager manager,
-			ConnectableDevice device) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onDeviceRemoved(DiscoveryManager manager,
-			ConnectableDevice device) {
-		Log.i(TAG, "onDeviceRemoved = "+device.getFriendlyName());
-		
-	}
-
-	@Override
-	public void onDiscoveryFailed(DiscoveryManager manager,
-			ServiceCommandError error) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	
 

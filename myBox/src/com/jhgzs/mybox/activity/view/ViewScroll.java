@@ -1,7 +1,8 @@
-package com.jhgzs.mybox.view;
+package com.jhgzs.mybox.activity.view;
 
 
-import com.jhgzs.mybox.view.TouchView.OnTouchCallBack;
+
+import com.jhgzs.mybox.activity.view.TouchView.OnTouchCallBack;
 
 import android.app.Activity;
 import android.content.Context;

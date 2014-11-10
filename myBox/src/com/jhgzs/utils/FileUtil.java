@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 
 import org.apache.http.util.EncodingUtils;
 
-import com.jhgzs.mybox.view.AsynImageLoader;
+import com.jhgzs.mybox.activity.view.AsynImageLoader;
 
 import android.os.Environment;
 

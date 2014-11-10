@@ -1,4 +1,4 @@
-package com.jhgzs.mybox.view;
+package com.jhgzs.mybox.activity.view;
 
 import java.io.File;
 import java.util.List;

@@ -8,11 +8,11 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jhgzs.mybox.R;
+import com.jhgzs.mybox.activity.view.ImageAdapter;
+import com.jhgzs.mybox.activity.view.MediaFileAdapter;
 import com.jhgzs.mybox.model.PhotoManager;
 import com.jhgzs.mybox.model.bean.MediaFileInfo;
 import com.jhgzs.mybox.sys.Config;
-import com.jhgzs.mybox.view.ImageAdapter;
-import com.jhgzs.mybox.view.MediaFileAdapter;
 import com.jhgzs.utils.FileUtil;
 import com.jhgzs.utils.LogUtil;
 

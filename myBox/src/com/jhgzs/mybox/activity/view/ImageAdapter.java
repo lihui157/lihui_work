@@ -1,4 +1,4 @@
-package com.jhgzs.mybox.view;
+package com.jhgzs.mybox.activity.view;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.jhgzs.mybox.R;
+import com.jhgzs.mybox.activity.view.MediaFileAdapter.ListItemView;
 import com.jhgzs.mybox.model.bean.MediaFileInfo;
-import com.jhgzs.mybox.view.MediaFileAdapter.ListItemView;
 import com.jhgzs.utils.BoxUtil;
 import com.jhgzs.utils.FileUtil;
 import com.jhgzs.utils.PicUtil;
