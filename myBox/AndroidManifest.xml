@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hui.mybox"
+    package="com.jhgzs.mybox"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -21,12 +21,12 @@
 
     <application
         android:allowBackup="true"
-        android:name="com.hui.mybox.sys.MediaApp"
+        android:name="com.jhgzs.mybox.sys.MediaApp"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppBaseTheme" >
         <activity
-            android:name="com.hui.mybox.activity.BoxMainFrameAct"
+            android:name="com.jhgzs.mybox.activity.BoxMainFrameAct"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.hui.mybox.activity.ImagePlayerAct"></activity>
+        <activity android:name="com.jhgzs.mybox.activity.ImagePlayerAct"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="{#path}/js/jquery.min.js"></script>
+<script src="{#path}/js/jquery.upload.js"></script>
+<link href="{#path}/css/css.css" rel="stylesheet" type="text/css">
+<body>
+<script type="text/javascript">
+var path = "";//当前路径
+
+//初始化列表请求
+$(document).ready(function(){
+  	getFileListData("");
+});
+
+function getFileListData(path){
+	var htmlobj=$.ajax({url:"/?action=list&path="+path,async:false});
+  	var html = createFileList(htmlobj.responseText);
+  	$("#file_list").html(html);
+	if(path!=""){
+		$("#path").html(path);
+	}else{
+		$("#path").html("/");
+	}
+	
+}
+
+function refreshFileListData(){
+	getFileListData(path);
+}
+
+function deleteFile(url){
+	var htmlobj=$.ajax({url:"/?action=delete&path="+url,async:false});
+  	var result = eval("("+htmlobj.responseText+")");
+	if(result.resultTag=="success"){
+		alert('删除成功');
+		getFileListData(path);
+	}else{
+		alert('删除失败');
+	}
+}
+
+//创建列表html
+function createFileList(jsonData){
+	//解析json对象
+	var jsonObj = eval("("+jsonData+")");
+	 //判断执行结果
+	if(jsonObj.resultTag == "success"){
+		//从对象中遍历列表
+		path = jsonObj.resultData.currentPath;
+		var data = jsonObj.resultData.fileList;
+		var html = "<table>";
+		html = html + "<tr><th>File</th><th>Size</th><th>Actions</th></tr>";
+		if(typeof(data) != "undefined"){
+			for(var i=0;i<data.length;i++){
+				if(!data[i].directory){
+					html = html+"<tr><td>"+data[i].fileName+"</td>";
+					html = html+"<td>"+data[i].fileLength+"</td>";
+					html = html+"<td><a href=\""+data[i].url+"\">下载</a> <a href=\"javascript:createRenameHtml('"+data[i].url+"')\">重命名</a> <a href=\"javascript:deleteFile('"+data[i].url+"')\">删除</a> </td><tr>";
+				}else{
+					html = html+"<tr><td><a href=\"javascript:getFileListData('"+data[i].url+"')\">"+data[i].fileName+"</a></td>";
+					html = html+"<td>&nbsp;</td>";
+					html = html+"<td><a href=\"javascript:downloadZip('"+data[i].url+"')\">下载</a> <a href=\"javascript:createRenameHtml('"+data[i].url+"')\">重命名</a> <a href=\"javascript:deleteFile('"+data[i].url+"')\">删除</a> </td><tr>";
+				}
+   			 }
+		}
+    	
+    	html = html+"</table>";
+		return html;
+	}else{
+		return "<ul>request fail</ul>"
+	}
+    
+}
+
+function createFolderHtml(){
+	openDialog("#create_folder");
+}
+//提交创建文件夹操作
+function submitCreateFolder(){
+	var fileName = $("#folderName").val();
+	var htmlobj=$.ajax({url:"/?action=createFolder&path="+path+"&fileName="+fileName,async:false});
+	var result = eval("("+htmlobj.responseText+")");
+	closeDialog("#create_folder");
+	if(result.resultTag=="success"){
+		alert('创建成功');
+		getFileListData(path);
+	}else{
+		alert('创建失败');
+	}
+	
+}
+
+function createRenameHtml(url){
+	openDialog("#rename");
+	$("#old_filepath").text(url);
+	
+	
+}
+
+//提交重命名操作
+function submitRename(){
+	var newName = $("#re_filename").val();
+	var oldPath = $("#old_filepath").text();
+	var htmlobj=$.ajax({url:"/?action=rename&path="+oldPath+"&fileName="+newName,async:false});
+	var result = eval("("+htmlobj.responseText+")");
+	closeDialog("#rename");
+	if(result.resultTag=="success"){
+		alert('修改成功');
+		getFileListData(path);
+	}else{
+		alert('修改失败');
+	}
+}
+
+function createUploadHtml(){
+	openDialog("#upload")
+	$("#upload_path").attr("value",path);
+}
+
+function submitUpload(){
+	var uploadPath = path;
+	var datafile = $("#datafile").val();
+	// 上传方法
+        $.upload({
+                // 上传地址
+                url: '/?action=upload',
+                // 文件域名字
+                fileName: 'datafile',
+                // 其他表单数据
+                params: {path:uploadPath},
+                // 上传完成后, 返回json, text
+                dataType: 'text',
+                // 上传之前回调,return true表示可继续上传
+                onSend: function() {
+                        return true;
+                },
+                // 上传之后回调
+                onComplate: function(data) {
+					var result = eval("("+data+")");
+                    if(result.resultTag=="success"){
+						alert("上传成功");
+						getFileListData(path);
+					}else{
+						alert("上传失败");
+					}
+                }
+        });
+}
+
+//打包下载
+function downloadZip(path){
+	var htmlobj=$.ajax({url:"/?action=downloadzip&path="+path,async:false});
+  	var result = eval("("+htmlobj.responseText+")");
+	alert(result.resultTag);
+	alert(result.resultData);
+	if(result.resultTag=="success"){
+		location.href = result.resultData;
+	}else{
+		alert('操作失败');
+	}
+}
+
+//弹出dialog
+function openDialog(dialogId){
+	$(dialogId).show();
+}
+
+//关闭dialog
+function closeDialog(dialogId){
+	$(dialogId).hide()
+}
+
+
+//返回上一级目录
+function toback(){
+	if(path!="/"&&path!=""){
+		var tempPath = path.substring(0,path.lastIndexOf('/'));
+		getFileListData(tempPath);
+	}
+}
+
+
+
+</script>
+<div class="logo">WIFI FILE TRANSFER</div>
+<div class="path">当前目录：<span id="path"></span></div>
+<div class="menu"><a href="javascript:toback()">[返回上一级]</a> <a href="javascript:createFolderHtml()">[新建文件夹]</a> <a href="javascript:submitUpload()">[上传到手机]</a> <a href="javascript:refreshFileListData()">[刷新]</a></div>
+<div id="file_list"></div>
+<div id="create_folder" style="display:none;">
+  <p>创建文件夹</p>
+  <form action="/action=createFolder"  method="get">
+    名称:<br />
+    <input type="text" name="folderName" id="folderName" size="30" value="">
+    <br />
+    <input type="button" onclick="javascript:submitCreateFolder()" value="submit">
+    <input type="button" value="cance" onclick="javascript:closeDialog('#create_folder')">
+  </form>
+</div>
+<div id="rename" style="display:none;">
+  <p>重命名</p>
+  <form action=""  method="get">
+    文件/文件夹:<span id="old_filepath"></span><br />
+    新名称:<br />
+    <input type="text" name="re_filename" id="re_filename" size="30" value="">
+    <br />
+    <input type="button" onclick="javascript:submitRename()" value="submit">
+    <input type="button" value="cance" onclick="javascript:closeDialog('#rename')">
+  </form>
+</div>
+<div id="upload" style="display:none;">
+  <p>文件上传</p>
+  <form action="/?action=upload" enctype="multipart/form-data" method="post">
+    文件上传:<br />
+    <input type="hidden" name="path" id="upload_path" value="" />
+    <input type="file" name="datafile" id="datafile" size="30">
+    <br />
+    <input type="button" value="upload" onclick="javascript:submitUpload()">
+    <input type="button" value="cance" onclick="javascript:closeDialog('#upload')">
+  </form>
+</div>
+</body>
+</html>

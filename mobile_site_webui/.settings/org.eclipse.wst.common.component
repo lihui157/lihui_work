@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="wifi_filemanage_webui">
+        <wb-resource deploy-path="/" source-path="/webroot"/>
+        <property name="context-root" value="wifi_filemanage_webui"/>
+    </wb-module>
+</project-modules>
