@@ -1,5 +1,24 @@
 package com.jhgzs.mybox.activity;
 
+import java.util.List;
+
+import junit.framework.Test;
+
+import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.device.ConnectableDeviceListener;
+import com.connectsdk.device.DevicePicker;
+import com.connectsdk.discovery.CapabilityFilter;
+import com.connectsdk.discovery.DiscoveryManager;
+import com.connectsdk.discovery.DiscoveryManagerListener;
+import com.connectsdk.service.DeviceService;
+import com.connectsdk.service.DeviceService.PairingType;
+import com.connectsdk.service.capability.MediaControl;
+import com.connectsdk.service.capability.MediaPlayer;
+import com.connectsdk.service.capability.MediaPlayer.LaunchListener;
+import com.connectsdk.service.capability.MediaPlayer.MediaLaunchObject;
+import com.connectsdk.service.capability.VolumeControl;
+import com.connectsdk.service.command.ServiceCommandError;
+import com.connectsdk.service.sessions.LaunchSession;
 import com.jhgzs.mybox.R;
 import com.jhgzs.mybox.activity.ImgListFragment.ImgListFragmentListener;
 import com.jhgzs.mybox.broadcast.MediaInfoChangeReceiver;
@@ -7,6 +26,7 @@ import com.jhgzs.mybox.sys.Config;
 import com.jhgzs.mybox.sys.FileFilter;
 
 import android.R.integer;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -22,9 +42,11 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
-		ImgListFragmentListener {
+		ImgListFragmentListener ,  DiscoveryManagerListener {
 
 	private static final String TAG = "BoxMainFrameAct";
 	private ActionBar actionBar;
@@ -32,8 +54,57 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	private ImgListFragment imgListFragment;
 	private MusicListFragment musicListFragment;
 	private VideoListFragment videoListFragment;
+	
+	private DiscoveryManager mDiscoveryManager;
+	private ConnectableDevice mDevice;
+	LaunchSession mLaunchSession;
+	MediaControl mMediaControl;
+	private ConnectableDeviceListener connectableDeviceListener = new ConnectableDeviceListener() {
+		
+		@Override
+		public void onPairingRequired(ConnectableDevice device,
+				DeviceService service, PairingType pairingType) {
+			Log.i(TAG, "onPairingRequired:"+device.getFriendlyName()+"||"+service.getServiceName()+"||"+pairingType.name());
+			
+		}
+		
+		@Override
+		public void onDeviceReady(ConnectableDevice device) {
+			Log.i(TAG, "onDeviceReady:"+device.getFriendlyName());
+			test();
+		}
+		
+		@Override
+		public void onDeviceDisconnected(ConnectableDevice device) {
+			Log.i(TAG, "onDeviceDisconnected:"+device.getFriendlyName());
+			
+		}
+		
+		@Override
+		public void onConnectionFailed(ConnectableDevice device,
+				ServiceCommandError error) {
+			Log.e(TAG, "onConnectionFailed:"+device.getFriendlyName()+"||"+error.getMessage());
+			
+		}
+		
+		@Override
+		public void onCapabilityUpdated(ConnectableDevice device,
+				List<String> added, List<String> removed) {
+			Log.e(TAG, "onCapabilityUpdated:"+device.getFriendlyName());
+			
+		}
+	};
+	private OnItemClickListener selectDevice = new AdapterView.OnItemClickListener() {
+	    @Override
+	    public void onItemClick(AdapterView adapter, View parent, int position, long id) {
+	        mDevice = (ConnectableDevice) adapter.getItemAtPosition(position);
+	        mDevice.addListener(connectableDeviceListener);
+	        mDevice.connect();
+	    }
+	};
 
 	private MediaInfoChangeReceiver receiver;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +126,63 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 				.setText(getString(R.string.title_section3))
 				.setTabListener(this));
 
-//		new Thread(new FileFilter(this)).start();
+		
+		DiscoveryManager.init(getApplicationContext());
 
+	    // This step could even happen in your app's delegate
+		CapabilityFilter videoFilter = new CapabilityFilter(
+				MediaPlayer.Display_Video, 
+				MediaControl.Any, 
+				VolumeControl.Volume_Up_Down
+		);
+		
+		CapabilityFilter audioFilter = new CapabilityFilter(
+				MediaPlayer.Display_Audio, 
+				MediaControl.Any, 
+				VolumeControl.Volume_Up_Down
+		);
+
+		CapabilityFilter imageCapabilities = new CapabilityFilter(
+				MediaPlayer.Display_Image
+		);
+
+		
+	    mDiscoveryManager = DiscoveryManager.getInstance();
+	    mDiscoveryManager.setCapabilityFilters(videoFilter, imageCapabilities,audioFilter);
+	    mDiscoveryManager.addListener(this);
+	    mDiscoveryManager.start();
+	    
+	    showImage();
+
+	}
+	
+	
+	private void test(){
+		String mediaURL = "http://www.connectsdk.com/files/9613/9656/8539/test_image.jpg"; // credit: Blender Foundation/CC By 3.0
+		String iconURL = "http://www.connectsdk.com/files/2013/9656/8845/test_image_icon.jpg"; // credit: sintel-durian.deviantart.com
+		String title = "Sintel Character Design";
+		String description = "Blender Open Movie Project";
+		String mimeType = "image/jpeg";
+
+		
+
+		MediaPlayer.LaunchListener listener = new LaunchListener() {
+		    
+
+		    @Override
+		    public void onError(ServiceCommandError error) {
+		        Log.d("App Tag", "Display photo failure: " + error);
+		    }
+
+			@Override
+			public void onSuccess(MediaLaunchObject object) {
+				 mLaunchSession = object.launchSession;
+			        mMediaControl = object.mediaControl;
+				
+			}
+		};
+
+		mDevice.getMediaPlayer().displayImage( mediaURL,iconURL,title,description,mimeType,listener);
 	}
 
 	@Override
@@ -91,6 +217,7 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	public void refreshMusicList() {
 
 	}
+	
 
 	@Override
 	public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
@@ -222,5 +349,40 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 			receiver = null;
 		}
 	}
+	
+	private void showImage() {
+	    DevicePicker devicePicker = new DevicePicker(this);
+	    AlertDialog dialog = devicePicker.getPickerDialog("Show Image", selectDevice);
+	    dialog.show();
+	}
+
+	@Override
+	public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
+		Log.i(TAG, "onDeviceAdded = "+device.getFriendlyName());
+		
+	}
+
+	@Override
+	public void onDeviceUpdated(DiscoveryManager manager,
+			ConnectableDevice device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDeviceRemoved(DiscoveryManager manager,
+			ConnectableDevice device) {
+		Log.i(TAG, "onDeviceRemoved = "+device.getFriendlyName());
+		
+	}
+
+	@Override
+	public void onDiscoveryFailed(DiscoveryManager manager,
+			ServiceCommandError error) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 }
