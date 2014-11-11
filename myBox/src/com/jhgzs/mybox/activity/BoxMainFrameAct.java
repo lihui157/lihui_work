@@ -24,6 +24,7 @@ import com.jhgzs.mybox.activity.ImgListFragment.ImgListFragmentListener;
 import com.jhgzs.mybox.broadcast.MediaInfoChangeReceiver;
 import com.jhgzs.mybox.connect.BoxConnectableDeviceListener;
 import com.jhgzs.mybox.connect.BoxDiscoverManagerListener;
+import com.jhgzs.mybox.service.HttpServerService;
 import com.jhgzs.mybox.sys.Config;
 import com.jhgzs.mybox.sys.FileFilter;
 
@@ -126,6 +127,8 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	    mDiscoveryManager.start();
 	    
 	    showImage();
+	    
+	    startWebServer();
 
 	}
 	
@@ -327,6 +330,18 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	    DevicePicker devicePicker = new DevicePicker(this);
 	    AlertDialog dialog = devicePicker.getPickerDialog("Show Image", selectDevice);
 	    dialog.show();
+	}
+	
+	private void startWebServer(){
+		Intent intent = new Intent(HttpServerService.SERVICE_ACTION);
+		intent.putExtra("action", HttpServerService.START_HTTPSERVER);
+		startService(intent);
+	}
+	
+	private void stopWebServer(){
+		Intent intent = new Intent(HttpServerService.SERVICE_ACTION);
+		intent.putExtra("action", HttpServerService.STOP_HTTPSERVER);
+		startService(intent);
 	}
 
 	

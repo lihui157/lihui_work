@@ -25,6 +25,15 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppBaseTheme" >
+        <service
+            android:name="com.jhgzs.mybox.service.HttpServerService"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="com.jhgzs.mybox.service.HttpServerService" />
+
+                <category android:name="android.intent.category.default" />
+            </intent-filter>
+        </service>
         <activity
             android:name="com.jhgzs.mybox.activity.BoxMainFrameAct"
             android:label="@string/app_name" >
