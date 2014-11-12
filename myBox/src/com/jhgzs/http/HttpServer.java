@@ -23,10 +23,14 @@ import java.util.StringTokenizer;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 public class HttpServer extends NanoHTTPD {
+	
+	private static final String TAG =  "HttpServer";
+	
 	/**
      * Common mime type for dynamic content: binary
      */
@@ -123,9 +127,9 @@ public class HttpServer extends NanoHTTPD {
 	 */
     public void init() {
     }
+    
 
-
-    protected static void registerPluginForMimeType(String[] indexFiles, String mimeType, WebServerPlugin plugin, Map<String, String> commandLineOptions) {
+	protected static void registerPluginForMimeType(String[] indexFiles, String mimeType, WebServerPlugin plugin, Map<String, String> commandLineOptions) {
         if (mimeType == null || plugin == null) {
             return;
         }

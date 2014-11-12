@@ -8,12 +8,14 @@ import java.net.UnknownHostException;
 import com.jhgzs.http.HttpServer;
 
 
+
 import android.app.Service;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.os.IBinder;
+import android.util.Log;
 
 public class HttpServerService extends Service {
 
@@ -70,23 +72,9 @@ public class HttpServerService extends Service {
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
-	/**
-	 * »ñÈ¡ip
-	 * @return
-	 * @throws UnknownHostException
-	 */
-	private InetAddress getLocalIpAddress() throws UnknownHostException {
-        WifiManager wifiManager = (WifiManager) getSystemService(android.content.Context.WIFI_SERVICE );
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int ipAddress = wifiInfo.getIpAddress();
-        return InetAddress.getByName(String.format("%d.%d.%d.%d",
-                        (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
-                        (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
-
-    }   
+	
 	
 	private void startWebServer(){
-		String rootPath = "/";
 //			ServerApplication.setServer(new CustomWebServer(getApplication(),8080, new File(rootPath)));
 		try {
 			if(server==null){
@@ -94,6 +82,7 @@ public class HttpServerService extends Service {
 			}
 			if(!server.isAlive()){
 				server.start();
+				Log.i(TAG, "server start ! port="+8080+" webroot="+Environment.getExternalStorageDirectory().getCanonicalPath());
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -104,8 +93,11 @@ public class HttpServerService extends Service {
 	private void stopWebServer(){
 //		ServerApplication.getServer().stop();
 //		ServerApplication.setServer(null);
-		if(server!=null)
-		server.stop();
+		if(server!=null){
+			server.stop();
+			Log.i(TAG, "server stop ! ");
+		}
+		
 	}
 
 }

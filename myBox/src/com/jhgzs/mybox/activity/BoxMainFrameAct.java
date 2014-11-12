@@ -1,5 +1,7 @@
 package com.jhgzs.mybox.activity;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import junit.framework.Test;
@@ -19,11 +21,11 @@ import com.connectsdk.service.capability.MediaPlayer.MediaLaunchObject;
 import com.connectsdk.service.capability.VolumeControl;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
+import com.jhgzs.connect.BoxConnectableDeviceListener;
+import com.jhgzs.connect.BoxDiscoverManagerListener;
 import com.jhgzs.mybox.R;
 import com.jhgzs.mybox.activity.ImgListFragment.ImgListFragmentListener;
 import com.jhgzs.mybox.broadcast.MediaInfoChangeReceiver;
-import com.jhgzs.mybox.connect.BoxConnectableDeviceListener;
-import com.jhgzs.mybox.connect.BoxDiscoverManagerListener;
 import com.jhgzs.mybox.service.HttpServerService;
 import com.jhgzs.mybox.sys.Config;
 import com.jhgzs.mybox.sys.FileFilter;
@@ -32,6 +34,8 @@ import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -71,7 +75,41 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	        if(connectableDeviceListener==null){
 	        	connectableDeviceListener = new BoxConnectableDeviceListener();
 	        }
-	        mDevice.addListener(connectableDeviceListener);
+	        mDevice.addListener(new ConnectableDeviceListener() {
+				
+				@Override
+				public void onPairingRequired(ConnectableDevice device,
+						DeviceService service, PairingType pairingType) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onDeviceReady(ConnectableDevice device) {
+					test();
+					
+				}
+				
+				@Override
+				public void onDeviceDisconnected(ConnectableDevice device) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onConnectionFailed(ConnectableDevice device,
+						ServiceCommandError error) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onCapabilityUpdated(ConnectableDevice device,
+						List<String> added, List<String> removed) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 	        mDevice.connect();
 	    }
 	};
@@ -126,8 +164,6 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	    mDiscoveryManager.addListener(discoverManagerListener);
 	    mDiscoveryManager.start();
 	    
-	    showImage();
-	    
 	    startWebServer();
 
 	}
@@ -171,6 +207,15 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
+		int id = item.getItemId();
+		switch (id) {
+		case R.id.action_settings:
+			showDevices();
+			break;
+
+		default:
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -326,9 +371,9 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 		}
 	}
 	
-	private void showImage() {
+	private void showDevices() {
 	    DevicePicker devicePicker = new DevicePicker(this);
-	    AlertDialog dialog = devicePicker.getPickerDialog("Show Image", selectDevice);
+	    AlertDialog dialog = devicePicker.getPickerDialog("Devices", selectDevice);
 	    dialog.show();
 	}
 	
@@ -343,6 +388,21 @@ public class BoxMainFrameAct extends ActionBarActivity implements TabListener,
 		intent.putExtra("action", HttpServerService.STOP_HTTPSERVER);
 		startService(intent);
 	}
+	
+	/**
+	 * »ñÈ¡ip
+	 * @return
+	 * @throws UnknownHostException
+	 */
+	private InetAddress getLocalIpAddress() throws UnknownHostException {
+        WifiManager wifiManager = (WifiManager) getSystemService(android.content.Context.WIFI_SERVICE );
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        return InetAddress.getByName(String.format("%d.%d.%d.%d",
+                        (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
+
+    }   
 
 	
 

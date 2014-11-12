@@ -1,6 +1,8 @@
 package com.jhgzs.mybox.sys;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
+
+
 
 
 
@@ -23,6 +27,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -38,6 +44,8 @@ public class MediaApp extends Application {
 	private static final String TAG = "MediaApp";
 	
 	public static SDCardFileListener listener;
+	
+	public static String hostName;
 	
 	//本地图片类型文件索引列表
 	public static LinkedList<MediaFileInfo> imgList;
@@ -235,10 +243,35 @@ public class MediaApp extends Application {
 			}
 		}.start();
         	
-			
+		new Thread(){
+			public void run(){
+				try {
+					hostName = getLocalIpAddress().getHostName();
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
+		
 		
 
     }
+    
+    /**
+	 * 获取ip
+	 * @return
+	 * @throws UnknownHostException
+	 */
+	private InetAddress getLocalIpAddress() throws UnknownHostException {
+        WifiManager wifiManager = (WifiManager) getSystemService(android.content.Context.WIFI_SERVICE );
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        return InetAddress.getByName(String.format("%d.%d.%d.%d",
+                        (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
+
+    }   
 
     /**
      * Called when the overall system is running low on memory

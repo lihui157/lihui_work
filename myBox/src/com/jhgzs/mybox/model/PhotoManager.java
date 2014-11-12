@@ -38,7 +38,10 @@ public class PhotoManager {
 			info.setLastModifTime(mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)));
 			info.setLength(mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media.SIZE)));
 			info.setPath(mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA)));
-			list.add(info);
+			if(info.getLength()!=0){
+				list.add(info);
+			}
+			
 		}
 
 		mCursor.close();

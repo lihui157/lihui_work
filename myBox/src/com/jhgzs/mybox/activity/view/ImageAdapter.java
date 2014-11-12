@@ -22,6 +22,7 @@ import com.jhgzs.mybox.activity.view.MediaFileAdapter.ListItemView;
 import com.jhgzs.mybox.model.bean.MediaFileInfo;
 import com.jhgzs.utils.BoxUtil;
 import com.jhgzs.utils.FileUtil;
+import com.jhgzs.utils.MediaUtil;
 import com.jhgzs.utils.PicUtil;
 
 import android.annotation.SuppressLint;
@@ -31,6 +32,7 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.util.LruCache;
 import android.text.format.DateUtils;
@@ -165,7 +167,7 @@ public class ImageAdapter extends BaseAdapter {
 					getLocalPic2ImageView(data.get(arg0).getPath(),listItemView.icon,arg0); //º”‘ÿ±æµÿÕº∆¨
 				}
 	        }else if(data.get(arg0).getFileType()==MediaFileInfo.FILE_TYPE_VIDEO){
-	        	Bitmap bm = ThumbnailUtils.createVideoThumbnail(data.get(arg0).getPath(), Thumbnails.MICRO_KIND);
+	        	Bitmap bm = MediaUtil.getVideoThumbnail(data.get(arg0).getPath(), 100, 100, MediaStore.Images.Thumbnails.MICRO_KIND);
 	        	if(bm==null){
 	        		listItemView.icon.setImageResource(R.drawable.video_type);
 	        	}else{
@@ -195,6 +197,8 @@ public class ImageAdapter extends BaseAdapter {
         return convertView;   
     
 	}
+	
+	
 
 	
 	private void getLocalPic2ImageView(String path,View view,int num){

@@ -1,4 +1,4 @@
-package com.jhgzs.mybox.connect;
+package com.jhgzs.connect;
 
 import java.util.List;
 

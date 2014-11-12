@@ -101,7 +101,7 @@ public class MediaFileInfo implements Serializable{
 	           if(ext.equals("wav")||ext.equals("ram")||ext.equals("mid")||ext.equals("mp3")){
 	               return MediaFileInfo.FILE_TYPE_AUDIO;
 	           }
-	           if(ext.equals("avi")||ext.equals("rm")||ext.equals("mpg")||ext.equals("mov")||ext.equals("asf")||ext.equals("mp4")){
+	           if(ext.equals("avi")||ext.equals("rm")||ext.equals("mpg")||ext.equals("mov")||ext.equals("asf")||ext.equals("mp4")||ext.equals("rmvb")||ext.equals("flv")){
 	               return MediaFileInfo.FILE_TYPE_VIDEO;
 	           }
 	       }else{
